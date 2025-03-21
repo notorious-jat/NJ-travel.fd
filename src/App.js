@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from "react";
+import { ToastContainer } from "react-toastify";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import CityPage from "./pages/CityPage";
+import PackagePage from "./pages/PackagePage";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import CityListPage from "./pages/CityListPage";
+import CreateCityPage from "./pages/CreateCityPage";
+import UpdateCityPage from "./pages/UpdateCityPage";
+import PackageListPage from "./pages/PackageListPage";
+import CreatePackagePage from "./pages/CreatePackagePage";
+import EditPackagePage from "./pages/EditPackagePage";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ToastContainer />
+      <Router>
+        <Routes>
+          <Route path="/" exact element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/city/:id" element={<CityPage />} />
+          <Route path="/package/:id" element={<PackagePage />} />
+          <Route path="/cities" element={<CityListPage />} />
+          <Route path="/cities/create" element={<CreateCityPage />} />
+          <Route path="/cities/edit/:id" element={<UpdateCityPage />} />
+          <Route path="/cities/package" element={<PackageListPage />} />
+          <Route
+            path="/cities/package/create"
+            element={<CreatePackagePage />}
+          />
+          <Route
+            path="/cities/package/edit/:id"
+            element={<EditPackagePage />}
+          />
+        </Routes>
+      </Router>
+    </>
   );
-}
+};
 
 export default App;
