@@ -12,6 +12,11 @@ const CityPageWrapper = styled.div`
   justify-content: center;
   padding: 20px;
 `;
+const CityContainer = styled.p`
+margin:0 5% 5%;
+font-size:18px;
+line-height:24px;
+`
 
 const CityPage = () => {
   const { id } = useParams(); // Use useParams to get the 'id' from the URL
@@ -42,12 +47,15 @@ const CityPage = () => {
           <Navbar />
           <HeroSlider
             images={city.images}
-            title={city.title}
-            desc={city.description}
+            title={city.name}
+            desc={city.subtitle}
           />
+          <CityContainer>
+          {city.description}
+          </CityContainer>
           {packages || packages.length ? (
-            <>
-              <h3>Explore Packages:</h3>
+            <div>
+              <h3 style={{margin:'0 5%'}}>Explore Packages:</h3>
               <CityPageWrapper>
                 {packages?.map((packageItem) => (
                   <PackageCard
@@ -56,7 +64,7 @@ const CityPage = () => {
                   />
                 ))}
               </CityPageWrapper>
-            </>
+            </div>
           ) : null}
         </div>
       )}

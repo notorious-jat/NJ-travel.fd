@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { FaHome, FaUser } from "react-icons/fa"; // You can import any icon you want
+import axios from "axios";
 import "./Navbar.css"; // Make sure to include the CSS for styling
-
+import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const navigate = useNavigate();
   // Check localStorage for token on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsLoggedIn(true);
+      const verify = async ()=>{
+        const response = await axios.post(
+          `http://localhost:5001/api/auth/authCheck`,{token}
+        );
+        if(response.data.status ==200){
+          setIsLoggedIn(true);
+        }else{
+          localStorage.removeItem("token")
+        }
+      }
+      verify();
     }
-  }, []);
+  }, [navigate]);
 
   // Handle login/logout functionality
   const handleAuthClick = () => {

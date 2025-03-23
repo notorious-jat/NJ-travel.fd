@@ -1,0 +1,52 @@
+/* src/App.css */
+.App {
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .App-header {
+    background-color: #282c34;
+    color: white;
+    padding: 20px;
+  }
+  
+  .order-list {
+    padding: 20px;
+    text-align: left;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .order-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 15px;
+  }
+  
+  .order-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 300px;
+    text-align: left;
+  }
+  
+  .order-card h3 {
+    margin-top: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .order-card {
+      width: 45%;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .order-card {
+      width: 30%;
+    }
+  }
+  

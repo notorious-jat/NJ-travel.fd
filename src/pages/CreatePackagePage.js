@@ -124,19 +124,17 @@ const CreatePackagePage = () => {
       toast(
         error.response ? error.response.data.message : "Something went wrong"
       );
-      console.log({ error });
-      return;
-      //   if (error.response && error.response.status === 401) {
-      //     // If the error status is 401, log out the user
-      //     localStorage.removeItem("token");
-      //     navigate("/login"); // Redirect to login page
-      //   } else {
-      //     // Display other errors
-      //     console.error(
-      //       "Error creating city:",
-      //       error.response ? error.response.data.message : error
-      //     );
-      //   }
+        if (error.response && error.response.status === 401) {
+          // If the error status is 401, log out the user
+          localStorage.removeItem("token");
+          navigate("/login"); // Redirect to login page
+        } else {
+          // Display other errors
+          console.error(
+            "Error creating city:",
+            error.response ? error.response.data.message : error
+          );
+        }
     }
   };
 

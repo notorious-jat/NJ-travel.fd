@@ -19,14 +19,13 @@ const CityCardWrapper = styled.div`
 
 const CityCardImage = styled.img`
   width: 100%;
-  height: 60%;
+  height: 85%;
   object-fit: cover;
 `;
 
 const CityCardContent = styled.div`
-  padding: 20px;
+  padding: 5px 10px;
   background-color: #fff;
-  text-align: center;
   color: #000;
   text-decoration: none;
 `;
@@ -34,7 +33,7 @@ const CityCardContent = styled.div`
 const CityCard = ({ city }) => {
   return (
     <CityCardWrapper>
-      <Link to={`/city/${city._id}`}>
+      <Link to={`/city/${city._id}`} style={{textDecoration:'none'}}>
         <CityCardImage
           src={
             city.images.length ? `http://localhost:5001\\${city.images[0]}` : ""
@@ -42,8 +41,8 @@ const CityCard = ({ city }) => {
           alt={city.name}
         />
         <CityCardContent>
-          <h3>{city.name}</h3>
-          <p>{city.subtitle}</p>
+          <h3 style={{lineHeight:'21px',margin:0,textTransform:'uppercase'}}>{city.name}</h3>
+          <p style={{fontSize:'12px',lineHeight:'18px',margin:0}}>{city.subtitle}</p>
         </CityCardContent>
       </Link>
     </CityCardWrapper>

@@ -4,15 +4,29 @@ import axios from "axios";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import HeroSlider from "../components/Slider";
+import Navbar from "../components/Navbar";
+import { MdAttachMoney, MdBalcony, MdDepartureBoard, MdDescription, MdDetails, MdFlightTakeoff, MdHotel, MdKitchen } from "react-icons/md";
+import { toast } from "react-toastify";
+import QuantityHandler from "../components/QuantityHandler";
+
 
 const PackageDetails = styled.div`
-  margin-top: 20px;
+  margin: 0 5%;
   padding: 20px;
 `;
+const TextHolder = styled.p`
+font-size:18px;
+line-height:24px;
+display:inline;
+`
+const TextContainer = styled.div`
+margin-bottom:10px;
+`
 
 const PackagePage = ({ match }) => {
   const { id } = useParams(); // Use useParams to get the 'id' from the URL
   const [packageDetail, setPackageDetail] = useState(null);
+  const [qty,setQty] = useState(1);
 
   useEffect(() => {
     const fetchPackageData = async () => {
@@ -26,24 +40,62 @@ const PackagePage = ({ match }) => {
     fetchPackageData();
   }, []);
 
+  const buyNowHandler = ()=>{
+    let token = localStorage.getItem('token');
+    if(token){
+      if(qty){
+        const data = {
+          package_id: id,
+          quantity: qty
+          }
+          localStorage.setItem("cart",JSON.stringify(data));
+          window.location.href = '/checkout'
+      }else{
+        toast.error('Please select quantity');
+      }
+    }else{
+      toast.error('Please login to buy this package');
+    }
+  }
+
   return (
     <section>
+      <Navbar />
       {packageDetail && (
         <div>
           <HeroSlider
             images={packageDetail.images}
             title={packageDetail.name}
+            desc={packageDetail.subtitle}
           />
           <PackageDetails>
-            <h3>Description:</h3>
-            <p>{packageDetail.flightDetails}</p>
-            <p>{packageDetail.hotelDetails}</p>
-            <p>{packageDetail.sightseeingDetails}</p>
-            <h3>Price: {packageDetail.price} USD</h3>
-            <h3>Duration: {packageDetail.duration}</h3>
-            <h3>
-              Meals: {packageDetail.includesMeal ? "Included" : "Not Included"}
-            </h3>
+            <TextContainer><MdDescription size={52} />
+              <TextHolder>{packageDetail.description}</TextHolder>
+            </TextContainer>
+            {packageDetail.includesFlight ? <TextContainer><MdFlightTakeoff size={52} /><TextHolder> {packageDetail.flightDetails}</TextHolder></TextContainer> : null}
+            {packageDetail.includesHotel ?
+              <TextHolder><MdHotel size={52} /> {packageDetail.hotelDetails}</TextHolder>
+              : null}
+            {packageDetail.includesMeal ?
+              <TextContainer>
+                <MdKitchen size={52} /><TextHolder> {packageDetail.mealDetails}</TextHolder>
+              </TextContainer>
+              : null}
+            {packageDetail.includesSightseeing ? <TextContainer>
+              <MdBalcony size={52} /><TextHolder> {packageDetail.sightseeingDetails}</TextHolder>
+            </TextContainer>
+              : null}
+            <TextContainer>
+
+              <MdAttachMoney size={52} /><TextHolder> {packageDetail.price} USD</TextHolder>
+            </TextContainer>
+            <TextContainer>
+
+              <MdDepartureBoard size={52} /><TextHolder> {packageDetail.duration}</TextHolder>
+            </TextContainer>
+            <QuantityHandler onQtyChange={setQty}/>
+            <button onClick={buyNowHandler}>buy now</button>
+
           </PackageDetails>
         </div>
       )}
