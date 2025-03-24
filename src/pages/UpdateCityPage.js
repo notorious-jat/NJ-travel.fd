@@ -29,6 +29,21 @@ const ImagePreview = styled.div`
   }
 `;
 
+const Button = styled.button`
+  background-color: #34495e;
+  color:#fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+  background-color: #fff;
+  color:#34495e;
+  }
+`;
+
 const UpdateCityPage = () => {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
@@ -42,13 +57,20 @@ const UpdateCityPage = () => {
   useEffect(() => {
     const fetchCity = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5001/api/cities/${id}`
-        );
-        setName(response.data.name);
-        setSubtitle(response.data.subtitle);
-        setDesc(response.data.description);
-        setCurrentImages(response.data.images); // Assuming images are an array
+        const token = localStorage.getItem("token");
+        if (token) {
+          let headers = { authorization: `Bearer ${token}` };
+          const response = await axios.get(
+            `http://localhost:5001/api/cities/${id}`, { headers }
+          );
+          setName(response.data.name);
+          setSubtitle(response.data.subtitle);
+          setDesc(response.data.description);
+          setCurrentImages(response.data.images); // Assuming images are an array
+        } else {
+          alert("Please login first")
+          navigate('/login')
+        }
       } catch (error) {
         console.error("Error fetching city:", error);
         toast.error("Error fetching city details.");
@@ -134,13 +156,15 @@ const UpdateCityPage = () => {
             onChange={(e) => setSubtitle(e.target.value)}
             required
           />
-          <InputField
-            type="text"
+          <textarea
             placeholder="City Description"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             required
-          />
+            rows="4" // Adjust the number of rows as needed
+            style={{ width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          ></textarea>
+
 
           {/* Display current images as previews */}
           {currentImages.length > 0 && (
@@ -162,7 +186,7 @@ const UpdateCityPage = () => {
             onChange={handleImageChange}
           />
 
-          <button type="submit">Update City</button>
+          <Button type="submit">Update City</Button>
         </form>
       </FormWrapper>
     </LeftMenu>

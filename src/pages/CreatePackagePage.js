@@ -32,7 +32,20 @@ const SelectField = styled.select`
   border-radius: 5px;
   border: 1px solid #ccc;
 `;
+const Button = styled.button`
+  background-color: #34495e;
+  color:#fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
 
+  &:hover {
+  background-color: #fff;
+  color:#34495e;
+  }
+`;
 const CreatePackagePage = () => {
   const { cityId } = useParams();
   const navigate = useNavigate();
@@ -124,17 +137,17 @@ const CreatePackagePage = () => {
       toast(
         error.response ? error.response.data.message : "Something went wrong"
       );
-        if (error.response && error.response.status === 401) {
-          // If the error status is 401, log out the user
-          localStorage.removeItem("token");
-          navigate("/login"); // Redirect to login page
-        } else {
-          // Display other errors
-          console.error(
-            "Error creating city:",
-            error.response ? error.response.data.message : error
-          );
-        }
+      if (error.response && error.response.status === 401) {
+        // If the error status is 401, log out the user
+        localStorage.removeItem("token");
+        navigate("/login"); // Redirect to login page
+      } else {
+        // Display other errors
+        console.error(
+          "Error creating city:",
+          error.response ? error.response.data.message : error
+        );
+      }
     }
   };
 
@@ -173,54 +186,26 @@ const CreatePackagePage = () => {
             name="subtitle"
             required
           />
-          <InputField
-            type="text"
-            placeholder="City Description"
-            value={formData.description}
-            onChange={handleChange}
-            name="description"
-            required
-          />
+          <textarea
+  placeholder="City Description"
+  name="description"
+  value={formData.description}
+  onChange={handleChange}
+  required
+  rows="4" // Adjust the number of rows as needed
+  style={{ width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+></textarea>
 
           {/* Checkbox fields */}
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="includesMeal"
-                checked={formData.includesMeal}
-                onChange={handleChange}
-              />
-              Includes Meal
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesFlight"
-                checked={formData.includesFlight}
-                onChange={handleChange}
-              />
-              Includes Flight
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesHotel"
-                checked={formData.includesHotel}
-                onChange={handleChange}
-              />
-              Includes Hotel
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesSightseeing"
-                checked={formData.includesSightseeing}
-                onChange={handleChange}
-              />
-              Includes Sightseeing
-            </label>
-          </div>
+          <label>
+            <input
+              type="checkbox"
+              name="includesFlight"
+              checked={formData.includesFlight}
+              onChange={handleChange}
+            />
+            Includes Flight
+          </label>
 
           <TextArea
             name="flightDetails"
@@ -229,6 +214,15 @@ const CreatePackagePage = () => {
             placeholder="Flight Details"
             disabled={!formData.includesFlight}
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesHotel"
+              checked={formData.includesHotel}
+              onChange={handleChange}
+            />
+            Includes Hotel
+          </label>
           <TextArea
             name="hotelDetails"
             value={formData.hotelDetails}
@@ -236,6 +230,15 @@ const CreatePackagePage = () => {
             placeholder="Hotel Details"
             disabled={!formData.includesHotel}
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesSightseeing"
+              checked={formData.includesSightseeing}
+              onChange={handleChange}
+            />
+            Includes Sightseeing
+          </label>
           <TextArea
             name="sightseeingDetails"
             value={formData.sightseeingDetails}
@@ -243,6 +246,15 @@ const CreatePackagePage = () => {
             placeholder="Sightseeing Details"
             disabled={!formData.includesSightseeing}
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesMeal"
+              checked={formData.includesMeal}
+              onChange={handleChange}
+            />
+            Includes Meal
+          </label>
           <TextArea
             name="mealDetails"
             value={formData.mealDetails}
@@ -263,8 +275,8 @@ const CreatePackagePage = () => {
             name="price"
             value={formData.price}
             onChange={handleChange}
-            placeholder="Price"
-            required
+          placeholder="Price"
+          required
           />
 
           {/* Status Dropdown */}
@@ -279,7 +291,7 @@ const CreatePackagePage = () => {
           </SelectField>
 
           <InputField type="file" multiple onChange={handleImageChange} />
-          <button type="submit">Create Package</button>
+          <Button type="submit">Create Package</Button>
         </form>
       </FormWrapper>
     </LeftMenu>

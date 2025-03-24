@@ -9,7 +9,7 @@ const RegisterWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 50px);
+  height: 80vh;
   background: url("https://via.placeholder.com/1500") no-repeat center center fixed;
   background-size: cover;
 `;
@@ -25,6 +25,7 @@ const RegisterBox = styled.div`
 
 const Input = styled.input`
   width: 100%;
+      max-width: 280px;
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
@@ -34,19 +35,20 @@ const Input = styled.input`
 const Button = styled.button`
   width: 100%;
   padding: 10px;
-  background-color: #f7c41f;
+  background-color: #ff6347;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
   &:hover {
-    background-color: #d19b1c;
+    background-color: #fff;
+    color:#ff6347;
   }
 `;
 
 const ErrorMessage = styled.p`
-  color: #ff4c4c;
+  color: #d19b1c;
 `;
 
 const SuccessMessage = styled.p`

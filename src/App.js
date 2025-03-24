@@ -16,6 +16,8 @@ import EditPackagePage from "./pages/EditPackagePage";
 import RegisterPage from "./pages/RegistrationPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderList from "./pages/OrderList";
+import Revenue from "./pages/Revenue";
+import UserListPage from "./pages/UserListPage";
 
 const App = () => {
   return (
@@ -26,6 +28,7 @@ const App = () => {
           <Route path="/" exact element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/user" element={<UserListPage />} />
           <Route path="/myorders" element={<OrderList />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
@@ -35,6 +38,7 @@ const App = () => {
           <Route path="/cities/create" element={<CreateCityPage />} />
           <Route path="/cities/edit/:id" element={<UpdateCityPage />} />
           <Route path="/cities/package" element={<PackageListPage />} />
+          <Route path="/cities/revenue" element={<Revenue />} />
           <Route
             path="/cities/package/create"
             element={<CreatePackagePage />}

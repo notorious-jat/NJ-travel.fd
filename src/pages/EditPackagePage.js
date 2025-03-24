@@ -25,6 +25,34 @@ const TextArea = styled.textarea`
   border: 1px solid #ccc;
 `;
 
+
+const ImagePreview = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+
+  img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+  }
+`;
+
+const Button = styled.button`
+  background-color: #34495e;
+  color:#fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+  background-color: #fff;
+  color:#34495e;
+  }
+`;
+
 const EditPackagePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,10 +76,17 @@ const EditPackagePage = () => {
   useEffect(() => {
     const fetchPackage = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5001/api/travel/package/${id}`
-        );
-        setFormData(response.data);
+        const token = localStorage.getItem("token");
+        if (token) {
+          let headers = { authorization: `Bearer ${token}` };
+          const response = await axios.get(
+            `http://localhost:5001/api/travel/package/${id}`, { headers }
+          );
+          setFormData(response.data.data);
+        } else {
+          navigate("/login");
+
+        }
       } catch (error) {
         console.error("Error fetching package:", error);
         toast.error("Failed to fetch package.");
@@ -87,14 +122,33 @@ const EditPackagePage = () => {
     Array.from(formData.images).forEach((file) => form.append("images", file));
 
     try {
-      await axios.put(`http://localhost:5001/api/travel/package/${id}`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Package updated successfully!");
-      navigate(`/city/${formData.city}/packages`);
+      const token = localStorage.getItem("token");
+      if (token) {
+        let headers = { authorization: `Bearer ${token}` };
+        await axios.put(`http://localhost:5001/api/travel/package/${id}`, form, {
+          headers: { ...headers, "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Package updated successfully!");
+        navigate(`/city/${formData.city}/packages`);
+      } else {
+        navigate("/login");
+
+      }
     } catch (error) {
-      console.error("Error updating package:", error);
-      toast.error("Failed to update package.");
+      toast(
+        error.response ? error.response.data.message : "Something went wrong"
+      );
+      if (error.response && error.response.status === 401) {
+        // If the error status is 401, log out the user
+        localStorage.removeItem("token");
+        navigate("/login"); // Redirect to login page
+      } else {
+        // Display other errors
+        console.error(
+          "Error creating city:",
+          error.response ? error.response.data.message : error
+        );
+      }
     }
   };
 
@@ -127,44 +181,15 @@ const EditPackagePage = () => {
             name="description"
             required
           />
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="includesMeal"
-                checked={formData.includesMeal}
-                onChange={handleChange}
-              />
-              Includes Meal
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesFlight"
-                checked={formData.includesFlight}
-                onChange={handleChange}
-              />
-              Includes Flight
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesHotel"
-                checked={formData.includesHotel}
-                onChange={handleChange}
-              />
-              Includes Hotel
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="includesSightseeing"
-                checked={formData.includesSightseeing}
-                onChange={handleChange}
-              />
-              Includes Sightseeing
-            </label>
-          </div>
+          <label>
+            <input
+              type="checkbox"
+              name="includesFlight"
+              checked={formData.includesFlight}
+              onChange={handleChange}
+            />
+            Includes Flight
+          </label>
           <TextArea
             name="flightDetails"
             value={formData.flightDetails}
@@ -172,6 +197,15 @@ const EditPackagePage = () => {
             placeholder="Flight Details"
             required
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesHotel"
+              checked={formData.includesHotel}
+              onChange={handleChange}
+            />
+            Includes Hotel
+          </label>
           <TextArea
             name="hotelDetails"
             value={formData.hotelDetails}
@@ -179,6 +213,15 @@ const EditPackagePage = () => {
             placeholder="Hotel Details"
             required
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesSightseeing"
+              checked={formData.includesSightseeing}
+              onChange={handleChange}
+            />
+            Includes Sightseeing
+          </label>
           <TextArea
             name="sightseeingDetails"
             value={formData.sightseeingDetails}
@@ -186,6 +229,15 @@ const EditPackagePage = () => {
             placeholder="Sightseeing Details"
             required
           />
+          <label>
+            <input
+              type="checkbox"
+              name="includesMeal"
+              checked={formData.includesMeal}
+              onChange={handleChange}
+            />
+            Includes Meal
+          </label>
           <TextArea
             name="mealDetails"
             value={formData.mealDetails}
@@ -209,9 +261,19 @@ const EditPackagePage = () => {
             placeholder="Price"
             required
           />
-
+          {formData.images.length > 0 && (
+            <ImagePreview>
+              {formData.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={`http://localhost:5001/${image}`}
+                  alt={`City Image ${index + 1}`}
+                />
+              ))}
+            </ImagePreview>
+          )}
           <InputField type="file" multiple onChange={handleImageChange} />
-          <button type="submit">Update Package</button>
+          <Button type="submit">Update Package</Button>
         </form>
       </FormWrapper>
     </LeftMenu>

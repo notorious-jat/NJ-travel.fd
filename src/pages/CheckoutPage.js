@@ -9,6 +9,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import PaymentForm from "../components/PaymentForm";
 import Navbar from "../components/Navbar";
+import QuantityHandler from "../components/QuantityHandler";
 
 // Styled components here (same as before) ...
 // Styled components
@@ -38,33 +39,10 @@ const Description = styled.p`
 const Price = styled.p`
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin: 0 0 20px;
   text-align:start;
 `;
 
-const QuantityWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const QuantityButton = styled.button`
-  background-color: #f7c41f;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  margin: 10px;
-`;
-
-const QuantityInput = styled.input`
-  width: 60px;
-  padding: 5px;
-  text-align: center;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-`;
 
 const ImageSliderWrapper = styled.div`
   width: 50%;
@@ -163,8 +141,21 @@ const CheckoutPage = () => {
             navigate("/login");
           }
         } catch (error) {
-          console.error(error);
-          toast.error("Error verifying token");
+toast.error(
+        error.response ? error.response.data.message : "Something went wrong"
+      );
+      if (error.response && error.response.status === 401) {
+        // If the error status is 401, log out the user
+        localStorage.removeItem("token");
+        localStorage.removeItem("role")
+        navigate("/login"); // Redirect to login page
+      } else {
+        // Display other errors
+        console.error(
+          "Error creating city:",
+          error.response ? error.response.data.message : error
+        );
+      }
         }
       };
       verify();
@@ -176,7 +167,7 @@ const CheckoutPage = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (cart.quantity) {
+    if (!cart.quantity) {
       setQuantity(cart.quantity);
     }
     if (isLoggedIn && id) {
@@ -219,6 +210,7 @@ const CheckoutPage = () => {
   if (!isLoggedIn || !packageDetail) {
     return <div>Loading...</div>;
   }
+  console.log({quantity});
 
   return (
     <>
@@ -255,26 +247,15 @@ const CheckoutPage = () => {
               <PaymentWrapper>
 
                 <Price>${packageDetail.price}</Price>
-
-                <QuantityWrapper>
-                  <QuantityButton onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-                    -
-                  </QuantityButton>
-                  <QuantityInput
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value)))}
-                    min="1"
-                  />
-                  <QuantityButton onClick={() => setQuantity(quantity + 1)}>+</QuantityButton>
-                </QuantityWrapper>
-
+                <QuantityHandler  initialQty={quantity} onQtyChange={setQuantity}/>
+                <div style={{marginTop:'20px'}}>
                 {/* Render the PaymentForm */}
                 <PaymentForm
                   clientSecret={clientSecret}
                   packageDetail={packageDetail}
                   quantity={quantity}
-                />
+                  />
+                  </div>
               </PaymentWrapper>
             </ProductInfoWrapper>
           </CheckoutWrapper>

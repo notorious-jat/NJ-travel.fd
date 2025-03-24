@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Navbar from "./Navbar";
@@ -34,8 +34,8 @@ const SidebarItem = styled.button`
   }
 `;
 const LogoutButton = styled.button`
-  background-color: #e74c3c;
-  color: white;
+  background-color: #fff;
+  color:#34495e;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -43,7 +43,7 @@ const LogoutButton = styled.button`
   margin-top: 20px;
 
   &:hover {
-    background-color: #c0392b;
+    color: #000;
   }
 `;
 const ContentWrapper = styled.div`
@@ -54,6 +54,22 @@ const ContentWrapper = styled.div`
 `;
 const LeftMenu = ({ children }) => {
   const navigate = useNavigate();
+  const [role,setRole] = useState(null);
+
+  useEffect(()=>{
+    let role = localStorage.getItem('role');
+    if(!role){
+      localStorage.removeItem("token")
+      navigate("/login")
+    }
+    if(role){
+      if(role=='user'){
+        navigate("/myorders");
+        return;
+      }
+      setRole(role);
+    }
+  },[role])
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -63,12 +79,12 @@ const LeftMenu = ({ children }) => {
     <DashboardWrapper>
       <Sidebar>
         <h2>Admin Dashboard</h2>
-        <SidebarItem onClick={() => navigate("/cities")}>City</SidebarItem>
-        <SidebarItem onClick={() => navigate("/cities/package")}>
+        {role == 'admin' ?<SidebarItem onClick={() => navigate("/cities")}>City</SidebarItem>:null}
+        {role !='user'?<SidebarItem onClick={() => navigate("/cities/package")}>
           Package
-        </SidebarItem>
-        <SidebarItem onClick={() => navigate("/user")}>User</SidebarItem>
-        <SidebarItem onClick={() => navigate("/revenue")}>Revenue</SidebarItem>
+        </SidebarItem>:null}
+        {role == 'admin'?<SidebarItem onClick={() => navigate("/user")}>User</SidebarItem>:null}
+        {role != 'user'?<SidebarItem onClick={() => navigate("/cities/revenue")}>Revenue</SidebarItem>:null}
         <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
       </Sidebar>
       <ContentWrapper>{children}</ContentWrapper>

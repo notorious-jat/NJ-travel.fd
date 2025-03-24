@@ -19,7 +19,7 @@ const CardInputWrapper = styled.div`
 const CheckoutButton = styled.button`
   width: 100%;
   padding: 12px;
-  background-color: #f7c41f;
+  background-color: #ff6347;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -28,7 +28,7 @@ const CheckoutButton = styled.button`
   margin-top: 10px;
 
   &:hover {
-    background-color: #d19b1c;
+    background-color: #e55347;
   }
 
   &:disabled {
@@ -52,8 +52,6 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity }) => {
         card: cardElement,
       },
     });
-    console.log({error,paymentIntent,packageDetail, quantity});
-    
 
     if (error) {
       toast.error("Payment failed: " + error.message);

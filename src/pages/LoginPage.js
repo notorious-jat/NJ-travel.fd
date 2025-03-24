@@ -10,7 +10,7 @@ const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: cal(100vh-50px);
+  height: 80vh;
   background: url("https://via.placeholder.com/1500") no-repeat center center
     fixed;
   background-size: cover;
@@ -27,6 +27,7 @@ const LoginBox = styled.div`
 
 const Input = styled.input`
   width: 100%;
+      max-width: 280px;
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
@@ -36,14 +37,15 @@ const Input = styled.input`
 const Button = styled.button`
   width: 100%;
   padding: 10px;
-  background-color: #f7c41f;
+  background-color: #ff6347;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
   &:hover {
-    background-color: #d19b1c;
+    background-color: #fff;
+    color:#ff6347;
   }
 `;
 
@@ -75,7 +77,9 @@ const LoginPage = () => {
         }
       );
       const token = response.data.token;
+      const role = response.data.role;
       localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password.");
@@ -88,7 +92,7 @@ const LoginPage = () => {
       <LoginWrapper>
         <LoginBox>
           <h2>Login</h2>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} style={{marginBottom:'10px'}}>
             <Input
               type="email"
               placeholder="Enter your email"
@@ -106,7 +110,7 @@ const LoginPage = () => {
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Button type="submit">Login</Button>
           </form>
-          <Link to={'/register'}>Register now</Link>
+          <Link style={{textDecoration:'none',color:'#fff'}} to={'/register'}>Register now</Link>
         </LoginBox>
       </LoginWrapper>
     </>

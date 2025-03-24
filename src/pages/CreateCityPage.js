@@ -17,6 +17,21 @@ const InputField = styled.input`
   border: 1px solid #ccc;
 `;
 
+const Button = styled.button`
+  background-color: #34495e;
+  color:#fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+  background-color: #fff;
+  color:#34495e;
+  }
+`;
+
 const CreateCityPage = () => {
   const [name, setName] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -59,7 +74,7 @@ const CreateCityPage = () => {
       );
       if (error.response && error.response.status === 401) {
         // If the error status is 401, log out the user
-        localStorage.removeItem("token");
+        localStorage.clear();
         navigate("/login"); // Redirect to login page
       } else {
         // Display other errors
@@ -98,20 +113,23 @@ const CreateCityPage = () => {
             onChange={(e) => setSubtitle(e.target.value)}
             required
           />
-          <InputField
-            type="text"
-            placeholder="City Description"
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            required
-          />
+<textarea
+  placeholder="City Description"
+  value={desc}
+  onChange={(e) => setDesc(e.target.value)}
+  required
+  rows="4" // Adjust the number of rows as needed
+  style={{ width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+></textarea>
+
+
           <InputField
             type="file"
             accept="image/*"
             multiple
             onChange={handleImageChange}
           />
-          <button type="submit">Create City</button>
+          <Button type="submit">Create City</Button>
         </form>
       </FormWrapper>
     </LeftMenu>

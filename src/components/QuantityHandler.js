@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Component for handling quantity with limits
-const QuantityHandler = ({ initialQty = 0, onQtyChange }) => {
+const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
   const [qty, setQty] = useState(initialQty); // Internal state for quantity
   const minQty = 1; // Minimum quantity limit
   const maxQty = 5; // Maximum quantity limit
@@ -50,18 +50,16 @@ const QuantityHandler = ({ initialQty = 0, onQtyChange }) => {
 const styles = {
   container: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#f3f3f3",
-    border: "1px solid #ccc",
+    border: "1px solid #000",
     borderRadius: "8px",
-    padding: "10px 20px",
-    width: "200px",
-    height: "50px",
-    gap: "10px",
+    width: "150px",
+    height: "50px"
   },
   button: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#000",
     color: "white",
     border: "none",
     padding: "10px",

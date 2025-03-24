@@ -1,3 +1,4 @@
+// src/pages/UserListPage.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -5,7 +6,8 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import LeftMenu from "../components/LeftMenu";
 
-const CityListWrapper = styled.div`
+// Styling for the page and the user cards
+const UserListWrapper = styled.div`
   padding: 20px;
 `;
 
@@ -22,7 +24,7 @@ const CardListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const CityCard = styled.div`
+const UserCard = styled.div`
   background: #f7f7f7;
   padding: 20px;
   border-radius: 8px;
@@ -63,18 +65,18 @@ const Button = styled.button`
   }
 `;
 
-const CityListPage = () => {
-  const [cities, setCities] = useState([]);
+const UserListPage = () => {
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCities = async () => {
+    const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
           let headers = { authorization: `Bearer ${token}` };
-          const response = await axios.get("http://localhost:5001/api/cities", { headers });
-          setCities(response.data);
+          const response = await axios.get("http://localhost:5001/api/auth/users", { headers });
+          setUsers(response.data.data);
         } else {
           toast.error("You must be logged in to view this page.");
           navigate("/login");
@@ -85,23 +87,23 @@ const CityListPage = () => {
           localStorage.removeItem("token");
           navigate("/login");
         } else {
-          console.error("Error fetching cities:", error);
+          console.error("Error fetching users:", error);
         }
       }
     };
-    fetchCities();
-  }, []);
+    fetchUsers();
+  }, [navigate]);
 
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
         let headers = { authorization: `Bearer ${token}` };
-        await axios.delete(`http://localhost:5001/api/cities/${id}`, { headers });
-        setCities(cities.filter((city) => city._id !== id));
-        toast.success("City deleted successfully!");
+        await axios.delete(`http://localhost:5001/api/auth/users/${id}`, { headers });
+        setUsers(users.filter((user) => user._id !== id));
+        toast.success("User deleted successfully!");
       } else {
-        toast("Please login to delete city");
+        toast("Please login to delete user");
         localStorage.removeItem("token");
         navigate("/login");
       }
@@ -111,7 +113,7 @@ const CityListPage = () => {
         localStorage.removeItem("token");
         navigate("/login");
       } else {
-        console.error("Error deleting city:", error);
+        console.error("Error deleting user:", error);
       }
     }
   };
@@ -119,46 +121,30 @@ const CityListPage = () => {
   return (
     <>
       <LeftMenu>
-        <CityListWrapper>
-          <Title>Cities</Title>
-          <Button onClick={() => navigate("/cities/create")}>
-            Add New City
-          </Button>
+        <UserListWrapper>
+          <Title>User List</Title>
+          {/* <Button onClick={() => navigate("/users/create")}>Add New User</Button> */}
 
-          {/* Card View for Cities */}
+          {/* Card View for Users */}
           <CardListWrapper>
-            {cities.map((city) => (
-              <CityCard key={city._id}>
-                {city.images && city.images.length > 0 && (
-                  <img
-                    src={`http://localhost:5001/${city.images[0]}`}
-                    alt={city.name}
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      marginBottom: "15px",
-                    }}
-                  />
-                )}
-                <CardTitle>{city.name}</CardTitle>
-                <CardContent>{city.desc}</CardContent>
-                <div>
-                  <Button onClick={() => navigate(`/cities/edit/${city._id}`)}>
-                    Edit
-                  </Button>
-                  <Button onClick={() => handleDelete(city._id)} style={{ marginLeft: "10px" }}>
+            {users.map((user) => (
+              <UserCard key={user._id}>
+                <CardTitle>{user.username}</CardTitle>
+                <CardContent>Email: {user.email}</CardContent>
+                {/* <CardContent>Status: {user.isActive ? "Active" : "Inactive"}</CardContent> */}
+                {/* <div>
+                  <Button onClick={() => navigate(`/users/edit/${user._id}`)}>Edit</Button>
+                  <Button onClick={() => handleDelete(user._id)} style={{ marginLeft: "10px" }}>
                     Delete
                   </Button>
-                </div>
-              </CityCard>
+                </div> */}
+              </UserCard>
             ))}
           </CardListWrapper>
-        </CityListWrapper>
+        </UserListWrapper>
       </LeftMenu>
     </>
   );
 };
 
-export default CityListPage;
+export default UserListPage;
