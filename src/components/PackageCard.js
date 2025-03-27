@@ -40,7 +40,7 @@ const PackageCard = ({ packageItem }) => {
         />
         <PackageCardContent>
           <h3 style={{ lineHeight: '24px', margin: 0, textTransform: 'uppercase' }}>{packageItem.name}</h3>
-          <p style={{ fontSize: '12px', lineHeight: '18px', margin: '10px 0 0' }}>Price: ${packageItem.price} USD/person</p>
+          <p style={{ fontSize: '12px', lineHeight: '18px', margin: '10px 0 0' }}>Price: ₹{packageItem.price} INR/person</p>
         </PackageCardContent>
       </Link>
     </PackageCardWrapper>

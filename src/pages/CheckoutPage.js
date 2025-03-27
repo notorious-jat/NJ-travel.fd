@@ -246,7 +246,7 @@ toast.error(
               <Description>{packageDetail.subtitle}</Description>
               <PaymentWrapper>
 
-                <Price>${packageDetail.price}</Price>
+                <Price>₹{packageDetail.price}</Price>
                 <QuantityHandler  initialQty={quantity} onQtyChange={setQuantity}/>
                 <div style={{marginTop:'20px'}}>
                 {/* Render the PaymentForm */}

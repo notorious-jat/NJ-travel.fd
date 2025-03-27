@@ -133,7 +133,7 @@ const Revenue = () => {
               <CityCard key={rev._id}>
                 <CardTitle>{rev.travel.name}</CardTitle>
                 <CardContent>Owner: {rev.ownedBy.username}</CardContent>
-                <CardContent>Amount: {rev.amount} USD</CardContent>
+                <CardContent>Amount: ₹{rev.amount} INR</CardContent>
                 <CardContent>For {rev.quantity} Person(s)</CardContent>
                 <CardContent>Purchase At: {rev.ownedDate}</CardContent>
                 <CardContent>Payment Id: {rev.paymentId}</CardContent>

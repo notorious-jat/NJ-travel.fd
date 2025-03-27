@@ -218,7 +218,7 @@ const OrderList = () => {
                                     <TravelInfo>
                                         <TravelName onClick={() => navigationHandler(order.travel._id)} title='click to see detttails'>{order.travel.name}</TravelName>
                                         <OrderInfo><strong>Person:</strong>{order.quantity}</OrderInfo>
-                                        <OrderInfo><strong>Total:</strong> ${order.amount}</OrderInfo>
+                                        <OrderInfo><strong>Total:</strong> ₹{order.amount}</OrderInfo>
                                     </TravelInfo>
 
                                     {/* Check if User has Reviewed the Travel Package */}

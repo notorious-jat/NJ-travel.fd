@@ -149,7 +149,7 @@ const PackagePage = ({ match }) => {
               : null}
             <TextContainer>
 
-              <MdAttachMoney size={52} /><TextHolder> {packageDetail.price} USD</TextHolder>
+              <MdAttachMoney size={52} /><TextHolder>₹{packageDetail.price} INR</TextHolder>
             </TextContainer>
             <TextContainer>
 
