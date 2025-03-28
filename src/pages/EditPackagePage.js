@@ -26,6 +26,14 @@ const TextArea = styled.textarea`
 `;
 
 
+const SelectField = styled.select`
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+`;
+
 const ImagePreview = styled.div`
   display: flex;
   gap: 10px;
@@ -70,6 +78,7 @@ const EditPackagePage = () => {
     includesSightseeing: false,
     duration: "",
     price: 0,
+    status:"",
     images: [],
   });
 
@@ -129,7 +138,7 @@ const EditPackagePage = () => {
           headers: { ...headers, "Content-Type": "multipart/form-data" },
         });
         toast.success("Package updated successfully!");
-        navigate(`/city/${formData.city}/packages`);
+        navigate(`/cities/package`);
       } else {
         navigate("/login");
 
@@ -195,7 +204,7 @@ const EditPackagePage = () => {
             value={formData.flightDetails}
             onChange={handleChange}
             placeholder="Flight Details"
-            required
+            disabled={!formData.includesFlight}
           />
           <label>
             <input
@@ -211,7 +220,7 @@ const EditPackagePage = () => {
             value={formData.hotelDetails}
             onChange={handleChange}
             placeholder="Hotel Details"
-            required
+            disabled={!formData.includesHotel}
           />
           <label>
             <input
@@ -227,7 +236,8 @@ const EditPackagePage = () => {
             value={formData.sightseeingDetails}
             onChange={handleChange}
             placeholder="Sightseeing Details"
-            required
+            
+            disabled={!formData.includesSightseeing}
           />
           <label>
             <input
@@ -243,7 +253,8 @@ const EditPackagePage = () => {
             value={formData.mealDetails}
             onChange={handleChange}
             placeholder="Meal Details"
-            required
+            
+            disabled={!formData.includesMeal}
           />
           <InputField
             type="text"
@@ -273,6 +284,15 @@ const EditPackagePage = () => {
             </ImagePreview>
           )}
           <InputField type="file" multiple onChange={handleImageChange} />
+          <SelectField
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            required
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </SelectField>
           <Button type="submit">Update Package</Button>
         </form>
       </FormWrapper>

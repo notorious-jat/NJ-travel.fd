@@ -39,7 +39,7 @@ const CityPage = () => {
 
     fetchCityData();
   }, [id]);
-
+  
   return (
     <div>
       {city && (
@@ -53,7 +53,7 @@ const CityPage = () => {
           <CityContainer>
           {city.description}
           </CityContainer>
-          {packages || packages.length ? (
+          {packages && packages?.length ? (
             <div>
               <h3 style={{margin:'0 5%'}}>Explore Packages:</h3>
               <CityPageWrapper>
