@@ -312,7 +312,7 @@ const ChatBot = () => {
   const handleFilterChange = async (filters) => {
     try {
       const response = await axios.get("http://localhost:5001/api/travel/filter", {
-        params: { name: filters },
+        params: { city: filters },
       });
       const packages = response?.data?.data || [];
       if (packages.length) {
