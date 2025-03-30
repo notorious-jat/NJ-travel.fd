@@ -181,14 +181,15 @@ const FilterButton = styled.div`
   right: 20px;
   background-color: #ff6347;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  padding:5px;
 `;
 
 const ChatBoxWrapper = styled.div`
@@ -372,7 +373,7 @@ const ChatBot = () => {
   return (
     <>
       <FilterButton onClick={() => setShowChat((prev) => !prev)}>
-        <ChatIcon />
+        <RobotIcon />
       </FilterButton>
 
       <ChatBoxWrapper showChat={showChat}>
