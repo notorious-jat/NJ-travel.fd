@@ -85,8 +85,14 @@ const FilterSelect = styled.select`
   }
 `;
 
+const ButtonContailer = styled.div`
+margin:auto;
+display:flex;
+justify-content:center;
+`
+
 const FilterButton = styled.button`
-  padding: 14px 20px;
+  padding: 8px;
   background-color: #ff6347;
   color: #fff;
   font-size: 16px;
@@ -94,7 +100,7 @@ const FilterButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
-  max-width:200px;
+  max-width:150px;
   transition: background-color 0.3s ease, transform 0.3s ease;
 
   &:hover {
@@ -107,7 +113,7 @@ const FilterButton = styled.button`
   }
 `;
 const ResetButton = styled.button`
-  padding: 14px 20px;
+  padding: 7px;
   background-color: #fff;
   font-size: 16px;
   color:#ff6347;
@@ -115,7 +121,7 @@ const ResetButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
-  max-width:200px;
+  max-width:100px;
   transition: background-color 0.3s ease, transform 0.3s ease;
 
   &:hover {
@@ -294,9 +300,10 @@ const FilterBar = ({ onFilterChange }) => {
             </FilterSelect>
           </FilterBox>
         </FilterGroup>
-
+        <ButtonContailer>
         <FilterButton onClick={handleSearch}>Show Results</FilterButton>&nbsp;
         <ResetButton onClick={handleReset}>Reset</ResetButton>
+        </ButtonContailer>
       </FilterBarWrapper>
     </>
   );

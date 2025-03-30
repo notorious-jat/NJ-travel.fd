@@ -57,9 +57,9 @@ const CityPage = () => {
           <Navbar />
           <HeroSlider images={city.images} title={city.name} desc={city.subtitle} />
           <CityContainer>{city.description}</CityContainer>
-          <FilterBar onFilterChange={handleFilterChange} />
           {packages?.length ? (
             <div>
+              <FilterBar onFilterChange={handleFilterChange} />
               <h3 style={{ margin: "0 5%" }}>Explore Packages:</h3>
               <CityPageWrapper>
                 {packages.map((packageItem) => (
