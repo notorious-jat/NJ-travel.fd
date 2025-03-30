@@ -128,7 +128,9 @@ const EditPackagePage = () => {
         form.append(key, formData[key]);
       }
     });
-    Array.from(formData.images).forEach((file) => form.append("images", file));
+    if(formData?.images){
+      Array.from(formData?.images).forEach((file) => form.append("images", file));
+    }
 
     try {
       const token = localStorage.getItem("token");

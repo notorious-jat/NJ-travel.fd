@@ -18,11 +18,13 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrderList from "./pages/OrderList";
 import Revenue from "./pages/Revenue";
 import UserListPage from "./pages/UserListPage";
+import Chatbot from "./components/Chatbot";
 
 const App = () => {
   return (
     <>
       <ToastContainer />
+      <Chatbot/>
       <Router>
         <Routes>
           <Route path="/" exact element={<HomePage />} />
