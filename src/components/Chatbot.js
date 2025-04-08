@@ -320,7 +320,7 @@ const ChatBot = () => {
           ...prevMessages,
           { text: "Here are some travel packages:", isUser: false },
           ...packages.map((pkg) => ({
-            text: `${pkg.name}: ${pkg.description}`,
+            text: `${pkg.name}: ${pkg.description} <br/><a href='/package/${pkg._id}' style='display:contents'>Book now</a>`,
             isUser: false,
           })),
         ]);
@@ -381,8 +381,7 @@ const ChatBot = () => {
           {messages.map((message, index) => (
             <MessageWrapper key={index} isUser={message.isUser}>
               {!message.isUser && <Icon><RobotIcon /></Icon>}
-              <MessageBubble isUser={message.isUser}>
-                {message.text}
+              <MessageBubble isUser={message.isUser} dangerouslySetInnerHTML={{__html:message.text}}>
               </MessageBubble>
               {message.isUser && <Icon><UserIcon /></Icon>}
             </MessageWrapper>
