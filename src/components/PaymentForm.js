@@ -37,7 +37,7 @@ const CheckoutButton = styled.button`
   }
 `;
 
-const PaymentForm = ({ clientSecret, packageDetail, quantity }) => {
+const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate}) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity }) => {
     } else if (paymentIntent.status === "succeeded") {
       toast.success("Payment successful!");
       let data = {
-        amount:packageDetail.price*quantity, quantity, paymentId:paymentIntent.id, travel:packageDetail._id
+        amount:(packageDetail.price*quantity*duration), quantity, paymentId:paymentIntent.id, travel:packageDetail._id,duration,startDate
       }
       try {
             const token = localStorage.getItem("token");
@@ -117,7 +117,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity }) => {
 
       {/* Checkout Button */}
       <CheckoutButton onClick={handlePayment}>
-        Pay ${packageDetail.price * quantity}
+        Pay ${packageDetail.price * quantity*duration}
       </CheckoutButton>
     </>
   );

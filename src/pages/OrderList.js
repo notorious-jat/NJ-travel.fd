@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Navbar from '../components/Navbar';
 import ReviewModal from '../components/ReviewModal';
 import { toast } from 'react-toastify';
+import Template from '../components/Template';
 
 // Styled Components
 const OrderListWrapper = styled.div`
@@ -143,7 +144,7 @@ const OrderList = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:5001/api/travel/user/package', {
+                const response = await fetch('http://localhost:5001/api/travel/user/packages', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -192,12 +193,11 @@ const OrderList = () => {
     };
 
     const navigationHandler = (id) => {
-        window.location.href = '/package/' + id
+        window.location.href = '/myorders/' + id
     }
 
     return (
-        <>
-            <Navbar />
+        <Template>
             {loading ? <div>Loading...</div> :
                 <OrderListWrapper>
                     <Title>Your Orders</Title>
@@ -207,10 +207,10 @@ const OrderList = () => {
                         <OrderContainer>
                             {orders.map((order, index) => (
                                 <OrderCard key={index} >
-                                    <Image onClick={() => navigationHandler(order.travel._id)} title='click to see detttails' src={`http://localhost:5001/${order.images?.[0]}`} />
+                                    <Image onClick={() => navigationHandler(order._id)} title='click to see detttails' src={`http://localhost:5001/${order.images?.[0]}`} />
                                     <OrderCardHeader>
                                         <OrderID><strong>Order #{order._id.slice(0, 5)}</strong></OrderID>
-                                        <OrderInfo><strong>City:</strong> {order.city.name}</OrderInfo>
+                                        <OrderInfo><strong>City:</strong> {order?.city?.name||'NA'}</OrderInfo>
                                         <OrderInfo><strong>Date:</strong> {new Date(order.ownedDate).toLocaleDateString()}</OrderInfo>
                                     </OrderCardHeader>
 
@@ -265,7 +265,7 @@ const OrderList = () => {
                     {/* Toast Message */}
                     {toastMessage && <div>{toastMessage}</div>}
                 </OrderListWrapper>}
-        </>
+        </Template>
     );
 };
 

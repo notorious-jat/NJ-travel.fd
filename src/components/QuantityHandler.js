@@ -34,6 +34,7 @@ const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
   };
 
   return (
+    <>
     <div style={styles.container}>
       <button style={styles.button} onClick={decreaseQty}>
         -
@@ -43,6 +44,7 @@ const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
         +
       </button>
     </div>
+    </>
   );
 };
 

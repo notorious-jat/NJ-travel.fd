@@ -62,7 +62,6 @@ const CreatePackagePage = () => {
     includesFlight: false,
     includesHotel: false,
     includesSightseeing: false,
-    duration: "",
     price: 0,
     status: "active",
     city: "",
@@ -261,14 +260,6 @@ const CreatePackagePage = () => {
             onChange={handleChange}
             placeholder="Meal Details"
             disabled={!formData.includesMeal}
-          />
-          <InputField
-            type="text"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="Duration (e.g., 3 days 2 nights)"
-            required
           />
           <InputField
             type="number"

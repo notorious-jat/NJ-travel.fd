@@ -1,4 +1,3 @@
-// CheckoutPage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -11,11 +10,10 @@ import PaymentForm from "../components/PaymentForm";
 import Navbar from "../components/Navbar";
 import QuantityHandler from "../components/QuantityHandler";
 
-// Styled components here (same as before) ...
 // Styled components
 const CheckoutWrapper = styled.div`
   display: flex;
-  height:88vh;
+  height: 88vh;
   justify-content: space-between;
   padding: 0 50px;
   background-color: #f4f4f4;
@@ -40,9 +38,8 @@ const Price = styled.p`
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0 0 20px;
-  text-align:start;
+  text-align: start;
 `;
-
 
 const ImageSliderWrapper = styled.div`
   width: 50%;
@@ -59,21 +56,12 @@ const MainImageWrapper = styled.div`
   border-radius: 10px;
   margin-bottom: 10px;
 `;
-
-const ImageSlider = styled.div`
-  width: 100%;
-  max-height: 400px;
-  overflow: hidden;
-  border-radius: 10px;
-`;
-
 const Image = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
   cursor: pointer;
 `;
-
 const ThumbnailsWrapper = styled.div`
   display: flex;
   gap: 10px;
@@ -94,6 +82,7 @@ const Thumbnail = styled.img`
     border: 2px solid #f7c41f;
   }
 `;
+
 const PaymentWrapper = styled.div`
   width: 100%;
   max-width: 500px;
@@ -105,6 +94,30 @@ const PaymentWrapper = styled.div`
   text-align: center;
 `;
 
+const InputField = styled.input`
+  width: 60%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+`;
+
+const AvailabilityButton = styled.button`
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f7c41f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover {
+    background-color: #e5b11f;
+  }
+`;
+
 const CheckoutPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [packageDetail, setPackageDetail] = useState({});
@@ -113,6 +126,10 @@ const CheckoutPage = () => {
   const [publicKey, setPublicKey] = useState("");
   const [stripePromise, setStripePromise] = useState(null); // store stripePromise
   const [selectedImage, setSelectedImage] = useState(null);
+  const [startDate, setStartDate] = useState(null); // New state for start date
+  const [numOfDays, setNumOfDays] = useState(1); // New state for number of days
+  const [isAvailable, setIsAvailable] = useState(false); // State for availability check result
+
   const navigate = useNavigate();
   let id = null;
   let data = localStorage.getItem("cart");
@@ -141,21 +158,14 @@ const CheckoutPage = () => {
             navigate("/login");
           }
         } catch (error) {
-toast.error(
-        error.response ? error.response.data.message : "Something went wrong"
-      );
-      if (error.response && error.response.status === 401) {
-        // If the error status is 401, log out the user
-        localStorage.removeItem("token");
-        localStorage.removeItem("role")
-        navigate("/login"); // Redirect to login page
-      } else {
-        // Display other errors
-        console.error(
-          "Error creating city:",
-          error.response ? error.response.data.message : error
-        );
-      }
+          toast.error(
+            error.response ? error.response.data.message : "Something went wrong"
+          );
+          if (error.response && error.response.status === 401) {
+            // If the error status is 401, log out the user
+            localStorage.removeItem("token");
+            navigate("/login"); // Redirect to login page
+          }
         }
       };
       verify();
@@ -194,8 +204,8 @@ toast.error(
   }, [isLoggedIn, id, quantity]);
 
   useEffect(() => {
-    setSelectedImage(packageDetail?.images?.[0])
-  }, [packageDetail])
+    setSelectedImage(packageDetail?.images?.[0]);
+  }, [packageDetail]);
 
   useEffect(() => {
     if (publicKey) {
@@ -207,10 +217,42 @@ toast.error(
     setSelectedImage(image);
   };
 
-  if (!isLoggedIn || !packageDetail) {
-    return <div>Loading...</div>;
-  }
-  console.log({quantity});
+  // Availability check function
+  const checkAvailability = async () => {
+    if (!startDate || !numOfDays) {
+      toast.error("Please select both start date and number of days.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        let headers = { authorization: `Bearer ${token}` };
+        const response = await axios.post(
+          "http://localhost:5001/api/travel/check-availability",
+          {
+            packageId: packageDetail._id,
+            startDate,
+            numOfDays,
+          },
+          { headers }
+        );
+        if (response.data.available) {
+          setIsAvailable(true); // Set availability to true if the dates are available
+        } else {
+          setIsAvailable(false); // Set availability to false if the dates are not available
+          toast.error(response.data.message); // Show the error message from the response
+        }
+      }
+    } catch (error) {
+      toast(error.response ? error.response.data.message : "Something went wrong");
+      if (error.response && error.response.status === 401) {
+        // If the error status is 401, log out the user
+        localStorage.clear();
+        navigate("/login"); // Redirect to login page
+      }
+    }
+  };
 
   return (
     <>
@@ -245,17 +287,50 @@ toast.error(
               <Title>{packageDetail.name}</Title>
               <Description>{packageDetail.subtitle}</Description>
               <PaymentWrapper>
-
                 <Price>₹{packageDetail.price}</Price>
-                <QuantityHandler  initialQty={quantity} onQtyChange={setQuantity}/>
-                <div style={{marginTop:'20px'}}>
-                {/* Render the PaymentForm */}
-                <PaymentForm
-                  clientSecret={clientSecret}
-                  packageDetail={packageDetail}
-                  quantity={quantity}
-                  />
+                <QuantityHandler initialQty={quantity} onQtyChange={setQuantity} />
+                <div style={{ marginTop: '20px' }}>
+                  {isAvailable ? (
+                    <PaymentForm
+                      clientSecret={clientSecret}
+                      packageDetail={packageDetail}
+                      quantity={quantity}
+                      duration={numOfDays}
+                      startDate={startDate}
+                    />
+                  ) : (
+                    <>
+                      <div>
+                        <label htmlFor="startDate">Select Start Date:</label>&nbsp;
+                        <InputField
+                          type="date"
+                          id="startDate"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="numOfDays">Number of Days:</label>&nbsp;
+                        <InputField
+                          type="number"
+                          id="numOfDays"
+                          min="1"
+                          value={numOfDays}
+                          onChange={(e) => setNumOfDays(e.target.value)}
+                        />
+                      </div>
+                      {/* {!startDate || !numOfDays ? (
+                  <div style={{ color: "red" }}>
+                    Please fill in both fields before checking availability.
                   </div>
+                ) : ( */}
+                      <AvailabilityButton onClick={checkAvailability}>
+                        Check Availability
+                      </AvailabilityButton>
+                      {/* )} */}
+                    </>
+                  )}
+                </div>
               </PaymentWrapper>
             </ProductInfoWrapper>
           </CheckoutWrapper>

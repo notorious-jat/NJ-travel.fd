@@ -60,8 +60,11 @@ const Navbar = () => {
   }
   return (
     <nav className="navbar">
+      <div className="logoContainer">
       <div className="logo" style={{cursor:'pointer'}} onClick={handleHomeClick}>
         <span className="logo-t">T</span>ravel.io
+      </div>
+      <div className="explore" onClick={()=>navigate("/explore")}>Explore</div>
       </div>
       <div style={{display:'flex',alignItems:'center'}}>
       <button className="auth-btn" onClick={handleAuthClick}>

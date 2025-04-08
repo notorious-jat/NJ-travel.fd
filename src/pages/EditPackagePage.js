@@ -76,7 +76,6 @@ const EditPackagePage = () => {
     includesFlight: false,
     includesHotel: false,
     includesSightseeing: false,
-    duration: "",
     price: 0,
     status:"",
     images: [],
@@ -259,14 +258,6 @@ const EditPackagePage = () => {
             disabled={!formData.includesMeal}
           />
           <InputField
-            type="text"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="Duration"
-            required
-          />
-          <InputField
             type="number"
             name="price"
             value={formData.price}
@@ -274,7 +265,7 @@ const EditPackagePage = () => {
             placeholder="Price"
             required
           />
-          {formData.images.length > 0 && (
+          {formData.images.length > 0 && typeof formData.images?.[0] == "string" && (
             <ImagePreview>
               {formData.images.map((image, index) => (
                 <img

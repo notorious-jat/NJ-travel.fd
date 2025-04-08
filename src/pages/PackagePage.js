@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import HeroSlider from "../components/Slider";
-import Navbar from "../components/Navbar";
+import HeroSlider from "../components/Slider"
+import Template from "../components/Template";
 import { MdAttachMoney, MdBalcony, MdDepartureBoard, MdDescription, MdDetails, MdFlightTakeoff, MdHotel, MdKitchen } from "react-icons/md";
 import { toast } from "react-toastify";
 import QuantityHandler from "../components/QuantityHandler";
+import Recommendations from "../components/RecommendationSlider";
+import { FaRupeeSign } from "react-icons/fa";
 
 
 const PackageDetails = styled.div`
@@ -44,11 +46,14 @@ const ReviewCard = styled.div`
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  &:hover{
+  box-shadow: 0 4px 8px rgba(0, 0,0, 0.2);
+  }
 `;
 
 const ReviewText = styled.p`
   color: #555;
-  font-size:14px;
+  font-size:15px;
   margin:2px 0;
 `;
 
@@ -74,7 +79,7 @@ const Button = styled.button`
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  width:150px;
+  width:200px;
   height:50px;
   font-size:1.5rem;
   text-transform:uppercase;
@@ -121,15 +126,15 @@ const PackagePage = ({ match }) => {
   }
 
   return (
-    <section>
-      <Navbar />
+    <Template>
       {packageDetail && (
         <div>
+          {packageDetail?.images.length?
           <HeroSlider
-            images={packageDetail.images}
-            title={packageDetail.name}
-            desc={packageDetail.subtitle}
-          />
+            images={packageDetail?.images}
+            title={packageDetail?.name}
+            desc={packageDetail?.subtitle}
+          />:null}
           <PackageDetails>
             <TextContainer><MdDescription size={52} />
               <TextHolder>{packageDetail.description}</TextHolder>
@@ -149,7 +154,7 @@ const PackagePage = ({ match }) => {
               : null}
             <TextContainer>
 
-              <MdAttachMoney size={52} /><TextHolder>₹{packageDetail.price} INR</TextHolder>
+              <FaRupeeSign size={52} /><TextHolder>{packageDetail.price} INR</TextHolder>
             </TextContainer>
             <TextContainer>
 
@@ -157,9 +162,13 @@ const PackagePage = ({ match }) => {
             </TextContainer>
             <div style={{display:'flex',gap:'10px',alignItems:'center',position:'sticky',bottom:'10px',zIndex:11}}>
             <QuantityHandler onQtyChange={setQty} />
-            <Button onClick={buyNowHandler}>Try now</Button>
+            <Button onClick={buyNowHandler}>Book now</Button>
             </div>
+            <Recommendations/>
             <div>
+              {packageDetail.reviews.length>0?
+              <>
+              <h2 style={{ margin: "5% 0 0" }}>Package Reviews:</h2>
               <ReviewSection>
                 {packageDetail.reviews.map((review, idx) => (
                   <ReviewCard key={idx}>
@@ -176,16 +185,17 @@ const PackagePage = ({ match }) => {
                       </StarContainer>
                       <ReviewDate>Reviewed on: {new Date(review.date).toLocaleDateString()}</ReviewDate>
                     </RateHolder>
-                        <h3 style={{margin:'4px 0'}}>{review.user.username}</h3>
+                        <h4 style={{margin:'4px 0'}}>{review.user.username}</h4>
                     <ReviewText>{review.description}</ReviewText>
                   </ReviewCard>
                 ))}
               </ReviewSection>
+              </>:null}
             </div>
           </PackageDetails>
         </div>
       )}
-    </section>
+    </Template>
   );
 };
 

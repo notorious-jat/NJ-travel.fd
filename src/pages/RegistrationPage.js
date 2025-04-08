@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
+import Template from "../components/Template";
 
 // Styled components
 const RegisterWrapper = styled.div`
@@ -86,8 +87,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <>
-      <Navbar />
+    <Template>
       <RegisterWrapper>
         <RegisterBox>
           <h2>Register</h2>
@@ -119,7 +119,7 @@ const RegisterPage = () => {
           </form>
         </RegisterBox>
       </RegisterWrapper>
-    </>
+    </Template>
   );
 };
 

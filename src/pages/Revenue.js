@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import LeftMenu from "../components/LeftMenu";
 
+// Styled components for the table layout
 const CityListWrapper = styled.div`
   padding: 20px;
   margin-top: 20px;
@@ -40,42 +41,9 @@ const TableRow = styled.tr`
   }
 `;
 
-const CardListWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
-`;
-
-const CityCard = styled.div`
-  background: #f7f7f7;
-  padding: 20px;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 300px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const CardTitle = styled.h3`
-  font-size: 18px;
-  color: #34495e;
-`;
-
-const CardContent = styled.p`
-  color: #7f8c8d;
-  font-size: 14px;
-  margin: 5px 0;
-`;
-
 const Button = styled.button`
   background-color: #34495e;
-  color: #fff;
+  color: white;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -88,8 +56,18 @@ const Button = styled.button`
   }
 `;
 
+const Input = styled.input`
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+`;
+
 const Revenue = () => {
   const [revenue, setRevenue] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // Combined search query (title, owner, price)
+  const [filterDate, setFilterDate] = useState(""); // Date filter
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,8 +77,6 @@ const Revenue = () => {
         if (token) {
           let headers = { authorization: `Bearer ${token}` };
           const response = await axios.get("http://localhost:5001/api/travel/city/packages/revenue", { headers });
-          console.log({ response });
-
           setRevenue(response.data.data);
         } else {
           toast.error("You must be logged in to view this page.");
@@ -109,17 +85,75 @@ const Revenue = () => {
       } catch (error) {
         toast(error.response ? error.response.data.message : "Something went wrong");
         if (error.response && error.response.status === 401) {
-          // If the error status is 401, log out the user
           localStorage.removeItem("token");
           navigate("/login"); // Redirect to login page
         } else {
-          // Display other errors
-          console.error("Error creating city:", error.response ? error.response.data.message : error);
+          console.error("Error fetching revenue:", error.response ? error.response.data.message : error);
         }
       }
     };
     fetchRevenue();
-  }, []);
+  }, [navigate]);
+
+  // useMemo for optimized filtering
+  const filteredRevenue = useMemo(() => {
+    return revenue.filter((rev) => {
+      const ownedDate = new Date(rev.ownedDate);
+      const filterDateObj = new Date(filterDate);
+
+      // Apply combined search filters for title, owner, or price
+      const searchMatch =
+        searchQuery.trim() === "" ||
+        rev.travel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        rev.ownedBy.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        rev.amount.toString().includes(searchQuery);
+
+      // Apply date filter
+      const dateMatch = filterDate
+        ? ownedDate.toDateString() === filterDateObj.toDateString()
+        : true;
+
+      return searchMatch && dateMatch;
+    });
+  }, [revenue, searchQuery, filterDate]); // Dependencies: re-run the filter when these change
+
+  // This function handles when the Cancel button is clicked
+  const handleCancel = async (packageId) => {
+    
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const headers = {
+            authorization: `Bearer ${token}`,
+          };
+    
+          // Make the API request to update the status to 'refunded' and set the cancelAt field
+          const response = await axios.put(
+            `http://localhost:5001/api/travel/update-status/${packageId}`,
+            { status: "refunded" }, // Updating the status to 'refunded'
+            { headers }
+          );
+    
+          // If the status update is successful
+          toast.success(`Successfully cancelled payment with ID: ${packageId}`);
+          console.log(response.data); // You can log the response for debugging
+          window.location.reload()
+          // Optionally update the state here or trigger a refresh if necessary
+        } else {
+          toast.error("Please login to cancel the payment.");
+          localStorage.clear();
+          // Optionally redirect the user to the login page
+        }
+      } catch (error) {
+        // Handle errors if the request fails
+        console.error("Error cancelling payment:", error);
+        toast.error(error.response ? error.response.data.message : "Something went wrong");
+      }
+    };
+
+    const handleDetail=(id)=>{
+      navigate("/cities/revenue/"+id)
+    }
 
   return (
     <>
@@ -127,19 +161,66 @@ const Revenue = () => {
         <CityListWrapper>
           <Title>Revenue</Title>
 
-          {/* Card View */}
-          <CardListWrapper>
-            {revenue.map((rev) => (
-              <CityCard key={rev._id}>
-                <CardTitle>{rev.travel.name}</CardTitle>
-                <CardContent>Owner: {rev.ownedBy.username}</CardContent>
-                <CardContent>Amount: ₹{rev.amount} INR</CardContent>
-                <CardContent>For {rev.quantity} Person(s)</CardContent>
-                <CardContent>Purchase At: {rev.ownedDate}</CardContent>
-                <CardContent>Payment Id: {rev.paymentId}</CardContent>
-              </CityCard>
-            ))}
-          </CardListWrapper>
+          {/* Search Filters */}
+          <div>
+            {/* Single Search Input (for Package Name, Owner Name, Price) */}
+            <Input
+              type="text"
+              placeholder="Search by Package Name, Owner Name, or Price"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Just update searchQuery state
+            />
+            {/* Date Filter */}
+            <Input
+              type="date"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)} // Just update filterDate state
+              style={{ marginLeft: "10px" }}
+            />
+          </div>
+
+          {/* Revenue Table */}
+          <Table>
+            <thead>
+              <tr>
+                <TableHeader>Package Name</TableHeader>
+                <TableHeader>Owner</TableHeader>
+                <TableHeader>Amount (INR)</TableHeader>
+                <TableHeader>Quantity</TableHeader>
+                <TableHeader>Purchase Date</TableHeader>
+                <TableHeader>Booking Status</TableHeader>
+                <TableHeader>Payment ID</TableHeader>
+                <TableHeader>Action</TableHeader>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRevenue.map((rev) => (
+                <TableRow key={rev._id}>
+                  <TableCell>{rev.travel.name}</TableCell>
+                  <TableCell>{rev.ownedBy.username}</TableCell>
+                  <TableCell>₹{rev.amount}</TableCell>
+                  <TableCell>{rev.quantity}</TableCell>
+                  <TableCell>{new Date(rev.ownedDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{rev.status}
+                    {rev.cancelAt ? 
+                    <>
+                     &nbsp;process at&nbsp;
+                    {new Date(rev.cancelAt).toLocaleDateString()}
+                    </>
+                    :null}
+                  </TableCell>
+                  <TableCell>{rev.paymentId}</TableCell>
+                  <TableCell>
+                    {rev.cancelAt?
+                    "Cancelled"
+                    :
+                    <Button onClick={() => handleCancel(rev._id)}>Cancel</Button>}
+                    <Button onClick={() => handleDetail(rev._id)}>Details</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
         </CityListWrapper>
       </LeftMenu>
     </>

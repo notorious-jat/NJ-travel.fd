@@ -15,39 +15,6 @@ const Title = styled.h2`
   margin-bottom: 20px;
 `;
 
-const CardListWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
-`;
-
-const CityCard = styled.div`
-  background: #f7f7f7;
-  padding: 20px;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 300px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const CardTitle = styled.h3`
-  font-size: 18px;
-  color: #34495e;
-`;
-
-const CardContent = styled.p`
-  color: #7f8c8d;
-  font-size: 14px;
-  margin: 5px 0;
-`;
-
 const Button = styled.button`
   background-color: #34495e;
   color: #fff;
@@ -63,8 +30,45 @@ const Button = styled.button`
   }
 `;
 
+const TableWrapper = styled.div`
+  margin-top: 20px;
+  overflow-x: auto;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHeader = styled.th`
+  background-color: #34495e;
+  color: white;
+  padding: 10px;
+  text-align: left;
+`;
+
+const TableCell = styled.td`
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+`;
+
+const TableRow = styled.tr`
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const FilterInput = styled.input`
+  padding: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+`;
+
 const CityListPage = () => {
   const [cities, setCities] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [filter, setFilter] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,6 +79,7 @@ const CityListPage = () => {
           let headers = { authorization: `Bearer ${token}` };
           const response = await axios.get("http://localhost:5001/api/cities", { headers });
           setCities(response.data);
+          setFilteredCities(response.data); // Initial set for filter
         } else {
           toast.error("You must be logged in to view this page.");
           navigate("/login");
@@ -90,7 +95,17 @@ const CityListPage = () => {
       }
     };
     fetchCities();
-  }, []);
+  }, [navigate]);
+
+  useEffect(() => {
+    // Filter cities based on the input text
+    const filtered = cities.filter((city) =>
+      city.name.toLowerCase().includes(filter.toLowerCase()) ||
+      city.subtitle.toLowerCase().includes(filter.toLowerCase()) ||
+      city.createdAt.toLowerCase().includes(filter.toLowerCase())
+    );
+    setFilteredCities(filtered);
+  }, [filter, cities]);
 
   const handleDelete = async (id) => {
     try {
@@ -99,6 +114,7 @@ const CityListPage = () => {
         let headers = { authorization: `Bearer ${token}` };
         await axios.delete(`http://localhost:5001/api/cities/${id}`, { headers });
         setCities(cities.filter((city) => city._id !== id));
+        setFilteredCities(filteredCities.filter((city) => city._id !== id));
         toast.success("City deleted successfully!");
       } else {
         toast("Please login to delete city");
@@ -121,40 +137,49 @@ const CityListPage = () => {
       <LeftMenu>
         <CityListWrapper>
           <Title>Cities</Title>
-          <Button onClick={() => navigate("/cities/create")}>
-            Add New City
-          </Button>
+          <Button onClick={() => navigate("/cities/create")}>Add New City</Button>
 
-          {/* Card View for Cities */}
-          <CardListWrapper>
-            {cities.map((city) => (
-              <CityCard key={city._id}>
-                {city.images && city.images.length > 0 && (
-                  <img
-                    src={`http://localhost:5001/${city.images[0]}`}
-                    alt={city.name}
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      marginBottom: "15px",
-                    }}
-                  />
-                )}
-                <CardTitle>{city.name}</CardTitle>
-                <CardContent>{city.desc}</CardContent>
-                <div>
-                  <Button onClick={() => navigate(`/cities/edit/${city._id}`)}>
-                    Edit
-                  </Button>
-                  <Button onClick={() => handleDelete(city._id)} style={{ marginLeft: "10px" }}>
-                    Delete
-                  </Button>
-                </div>
-              </CityCard>
-            ))}
-          </CardListWrapper>
+          {/* Filter Input */}
+          <FilterInput
+            type="text"
+            placeholder="Search cities by name, subtitle, or description..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+
+          {/* Table View for Cities */}
+          <TableWrapper>
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Name</TableHeader>
+                  <TableHeader>Subtitle</TableHeader>
+                  <TableHeader>Create At</TableHeader>
+                  <TableHeader>Actions</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCities.map((city) => (
+                  <TableRow key={city._id}>
+                    <TableCell>{city.name}</TableCell>
+                    <TableCell>{city.subtitle}</TableCell>
+                    <TableCell>{city.createdAt}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => navigate(`/cities/edit/${city._id}`)}>
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(city._id)}
+                        style={{ marginLeft: "10px" }}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </tbody>
+            </Table>
+          </TableWrapper>
         </CityListWrapper>
       </LeftMenu>
     </>

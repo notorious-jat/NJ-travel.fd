@@ -9,9 +9,17 @@
   font-family: Arial, sans-serif;
   position: sticky;
   top: 0;
-  z-index: 11;
+  z-index: 1111;
 }
-
+.logoContainer{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.logoContainer .explore:hover{
+  text-decoration: underline;
+  cursor: pointer;
+}
 .logo {
   font-size: 24px;
   font-weight: bold;

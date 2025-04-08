@@ -111,13 +111,11 @@ const CreateCityPage = () => {
             placeholder="City Sub Title"
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
-            required
           />
 <textarea
   placeholder="City Description"
   value={desc}
   onChange={(e) => setDesc(e.target.value)}
-  required
   rows="4" // Adjust the number of rows as needed
   style={{ width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
 ></textarea>

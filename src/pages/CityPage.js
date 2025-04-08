@@ -45,7 +45,6 @@ const CityPage = () => {
     const response = await axios.get("http://localhost:5001/api/travel/filter", {
       params: {...filters,cityId:id},
     });
-    console.log({filters,response});
     
     setPackages(response?.data?.data || []);
   };

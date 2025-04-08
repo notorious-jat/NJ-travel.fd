@@ -4,7 +4,7 @@ import axios from "axios";
 import CityCard from "../components/CityCard";
 import styled from "styled-components";
 import HeroSlider from "../components/Slider";
-import Navbar from "../components/Navbar";
+import Template from "../components/Template";
 
 // Style for the HomePage container
 const HomePageWrapper = styled.div`
@@ -17,17 +17,16 @@ const HomePageWrapper = styled.div`
 const HomePage = () => {
   const [cities, setCities] = useState([]);
 
-  useEffect(() => {
-    const fetchCities = async () => {
-      const response = await axios.get("http://localhost:5001/api/cities"); // Adjust based on your backend
-      setCities(response.data);
-    };
+  // useEffect(() => {
+  //   const fetchCities = async () => {
+  //     const response = await axios.get("http://localhost:5001/api/cities"); // Adjust based on your backend
+  //     setCities(response.data);
+  //   };
 
-    fetchCities();
-  }, []);
+  //   fetchCities();
+  // }, []);
   return (
-    <div>
-      <Navbar />
+    <Template>
       <HeroSlider
         images={["/1.jpg", "/2.jpg", "/3.jpg"]}
         baseUrl="http://localhost:3000"
@@ -46,7 +45,7 @@ const HomePage = () => {
           </HomePageWrapper>
         </>
       ) : null}
-    </div>
+    </Template>
   );
 };
 

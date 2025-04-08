@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
+import Template from "../components/Template";
 
 // Styled components
 const LoginWrapper = styled.div`
@@ -87,8 +88,7 @@ const LoginPage = () => {
   };
 
   return (
-    <>
-      <Navbar />
+    <Template>
       <LoginWrapper>
         <LoginBox>
           <h2>Login</h2>
@@ -113,7 +113,7 @@ const LoginPage = () => {
           <Link style={{textDecoration:'none',color:'#fff'}} to={'/register'}>Register now</Link>
         </LoginBox>
       </LoginWrapper>
-    </>
+    </Template>
   );
 };
 

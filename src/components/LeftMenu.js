@@ -64,7 +64,7 @@ const LeftMenu = ({ children }) => {
     }
     if(role){
       if(role=='user'){
-        navigate("/myorders");
+        navigate("/");
         return;
       }
       setRole(role);
@@ -78,7 +78,8 @@ const LeftMenu = ({ children }) => {
   return (
     <DashboardWrapper>
       <Sidebar>
-        <h2>Admin Dashboard</h2>
+        <h2 style={{textTransform:'capitalize'}}>{role} Dashboard</h2>
+        {role !='user'?<SidebarItem onClick={() => navigate("/dashboard")}>Home</SidebarItem>:null}
         {role == 'admin' ?<SidebarItem onClick={() => navigate("/cities")}>City</SidebarItem>:null}
         {role !='user'?<SidebarItem onClick={() => navigate("/cities/package")}>
           Package

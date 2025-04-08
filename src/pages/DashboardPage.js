@@ -1,6 +1,8 @@
 // src/pages/DashboardPage.js
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import LeftMenu from "../components/LeftMenu";
 // Styled components for the layout
@@ -39,13 +41,41 @@ const ReportBlock = styled.div`
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [report, setReport] = useState({cities:0,packages:0,revenue:0,users:0});
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     } else {
-      setUser(token); // You can expand this to show more user info if needed
+      const fetchDash = async () => {
+        try {
+          setUser(token)
+          if (token) {
+            let headers = { authorization: `Bearer ${token}` };
+            const response = await axios.get(
+              `http://localhost:5001/api/travel/dashboard`,
+              { headers }
+            );
+            setReport(response.data)
+          } else {
+            navigate("/login");
+          }
+        } catch (error) {
+          console.log({error})
+          toast(
+            error.response ? error.response.data.message : "Something went wrong"
+          );
+          if (error.response && error.response.status === 401) {
+            // If the error status is 401, log out the user
+            localStorage.clear();
+            navigate("/login"); // Redirect to login page
+          } else {
+            console.error("Error fetching packages:", error);
+          }
+        }
+      }
+      fetchDash();
     }
   }, [navigate]);
   return (
@@ -59,19 +89,19 @@ const DashboardPage = () => {
                 {/* Static Report Blocks */}
                 <ReportBlock>
                   <h4>Cities</h4>
-                  <p>12</p> {/* Static number for now */}
+                  <p>{report.cities}</p> {/* Static number for now */}
                 </ReportBlock>
                 <ReportBlock>
                   <h4>Users</h4>
-                  <p>120</p> {/* Static number for now */}
+                  <p>{report.users}</p> {/* Static number for now */}
                 </ReportBlock>
                 <ReportBlock>
                   <h4>Packages</h4>
-                  <p>45</p> {/* Static number for now */}
+                  <p>{report.packages}</p> {/* Static number for now */}
                 </ReportBlock>
                 <ReportBlock>
                   <h4>Revenue</h4>
-                  <p>$30,000</p> {/* Static number for now */}
+                  <p>₹{report.revenue}</p> {/* Static number for now */}
                 </ReportBlock>
               </DashboardBox>
             </div>

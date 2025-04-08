@@ -39,8 +39,9 @@ const PackageCard = ({ packageItem }) => {
           alt={packageItem.name}
         />
         <PackageCardContent>
-          <h3 style={{ lineHeight: '24px', margin: 0, textTransform: 'uppercase' }}>{packageItem.name}</h3>
-          <p style={{ fontSize: '12px', lineHeight: '18px', margin: '10px 0 0' }}>Price: ₹{packageItem.price} INR/person</p>
+          <h3 style={{ lineHeight: '24px', margin: 0, textTransform: 'uppercase',fontSize:'16px' }}>{packageItem.name.length > 25 ?packageItem.name?.slice(0,25)+'...':packageItem.name}</h3>
+          <p style={{ fontSize: '12px', lineHeight: '18px', margin: '5px 0 0' }}>City: {packageItem?.city?.name||'NA'}</p>
+          <p style={{ fontSize: '12px', lineHeight: '18px', margin: '0' }}>Price: ₹{packageItem.price} INR/person</p>
         </PackageCardContent>
       </Link>
     </PackageCardWrapper>

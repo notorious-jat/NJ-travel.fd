@@ -18,29 +18,33 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrderList from "./pages/OrderList";
 import Revenue from "./pages/Revenue";
 import UserListPage from "./pages/UserListPage";
-import Chatbot from "./components/Chatbot";
+import Explore from "./pages/Explore";
+import OrderDetail from "./pages/OrderDetail";
+import RevenueDetails from "./pages/RevenueDetails";
 
 const App = () => {
   return (
     <>
       <ToastContainer />
-      <Chatbot/>
       <Router>
         <Routes>
           <Route path="/" exact element={<HomePage />} />
+          <Route path="/explore" element={<Explore/>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/user" element={<UserListPage />} />
           <Route path="/myorders" element={<OrderList />} />
+          <Route path="/myorders/:id" element={<OrderDetail />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/city/:id" element={<CityPage />} />
+          {/* <Route path="/city/:id" element={<CityPage />} /> */}
           <Route path="/package/:id" element={<PackagePage />} />
           <Route path="/cities" element={<CityListPage />} />
           <Route path="/cities/create" element={<CreateCityPage />} />
           <Route path="/cities/edit/:id" element={<UpdateCityPage />} />
           <Route path="/cities/package" element={<PackageListPage />} />
           <Route path="/cities/revenue" element={<Revenue />} />
+          <Route path="/cities/revenue/:id" element={<RevenueDetails/>}/>
           <Route
             path="/cities/package/create"
             element={<CreatePackagePage />}
