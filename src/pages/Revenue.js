@@ -186,10 +186,12 @@ const Revenue = () => {
                 <TableHeader>Package Name</TableHeader>
                 <TableHeader>Owner</TableHeader>
                 <TableHeader>Amount (INR)</TableHeader>
-                <TableHeader>Quantity</TableHeader>
+                <TableHeader>Number of Person</TableHeader>
                 <TableHeader>Purchase Date</TableHeader>
                 <TableHeader>Booking Status</TableHeader>
-                <TableHeader>Payment ID</TableHeader>
+                <TableHeader>Booking Duration</TableHeader>
+                <TableHeader>Booking Start Date</TableHeader>
+                <TableHeader>Booking End Date</TableHeader>
                 <TableHeader>Action</TableHeader>
               </tr>
             </thead>
@@ -209,7 +211,9 @@ const Revenue = () => {
                     </>
                     :null}
                   </TableCell>
-                  <TableCell>{rev.paymentId}</TableCell>
+                  <TableCell>{rev.duration} Days {rev.duration >1 ?` & ${rev.duration-1} Nights`:null}</TableCell>
+                  <TableCell>{new Date(rev.bookingStartDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(rev.bookingEndDate).toLocaleDateString()}</TableCell>
                   <TableCell>
                     {rev.cancelAt?
                     "Cancelled"

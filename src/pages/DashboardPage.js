@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import LeftMenu from "../components/LeftMenu";
+import Loader from "../components/Loader";
 // Styled components for the layout
 const WelcomeMessage = styled.h2`
   color: #f7c41f;
@@ -108,7 +109,7 @@ const DashboardPage = () => {
           </LeftMenu>
         </>
       ) : (
-        <p>Loading...</p>
+        <Loader/>
       )}
     </>
   );

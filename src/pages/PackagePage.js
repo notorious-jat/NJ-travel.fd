@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import QuantityHandler from "../components/QuantityHandler";
 import Recommendations from "../components/RecommendationSlider";
 import { FaRupeeSign } from "react-icons/fa";
+import Loader from "../components/Loader";
 
 
 const PackageDetails = styled.div`
@@ -97,8 +98,13 @@ const PackagePage = ({ match }) => {
 
   useEffect(() => {
     const fetchPackageData = async () => {
+      let token = localStorage.getItem('token')
       const response = await axios.get(
-        `http://localhost:5001/api/travel/package/${id}`
+        `http://localhost:5001/api/travel/package/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+      }
       );
       console.log({ response });
       setPackageDetail(response.data.data);
@@ -124,17 +130,20 @@ const PackagePage = ({ match }) => {
       toast.error('Please login to buy this package');
     }
   }
+  const handleBookingDetail = () => {
+    window.location.href = `/myorders/${packageDetail?.ownedId}`
+  }
 
   return (
     <Template>
-      {packageDetail && (
+      {packageDetail ? (
         <div>
-          {packageDetail?.images.length?
-          <HeroSlider
-            images={packageDetail?.images}
-            title={packageDetail?.name}
-            desc={packageDetail?.subtitle}
-          />:null}
+          {packageDetail?.images.length ?
+            <HeroSlider
+              images={packageDetail?.images}
+              title={packageDetail?.name}
+              desc={packageDetail?.subtitle}
+            /> : null}
           <PackageDetails>
             <TextContainer><MdDescription size={52} />
               <TextHolder>{packageDetail.description}</TextHolder>
@@ -152,49 +161,55 @@ const PackagePage = ({ match }) => {
               <MdBalcony size={52} /><TextHolder> {packageDetail.sightseeingDetails}</TextHolder>
             </TextContainer>
               : null}
+               {packageDetail.includesTransport ? <TextContainer>
+              <MdDepartureBoard size={52} /><TextHolder> {packageDetail.transportDetails}</TextHolder>
+            </TextContainer>
+              : null}
             <TextContainer>
 
               <FaRupeeSign size={52} /><TextHolder>{packageDetail.price} INR</TextHolder>
             </TextContainer>
-            <TextContainer>
-
-              <MdDepartureBoard size={52} /><TextHolder> {packageDetail.duration}</TextHolder>
-            </TextContainer>
-            <div style={{display:'flex',gap:'10px',alignItems:'center',position:'sticky',bottom:'10px',zIndex:11}}>
-            <QuantityHandler onQtyChange={setQty} />
-            <Button onClick={buyNowHandler}>Book now</Button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'sticky', bottom: '10px', zIndex: 11,background:'#fff' }}>
+            {packageDetail?.owned?
+              <Button onClick={handleBookingDetail}>Book Details</Button>
+            :
+            <>
+              <QuantityHandler onQtyChange={setQty} />
+              <Button onClick={buyNowHandler}>Book now</Button>
+            </>
+            }
             </div>
-            <Recommendations/>
+            <Recommendations />
             <div>
-              {packageDetail.reviews.length>0?
-              <>
-              <h2 style={{ margin: "5% 0 0" }}>Package Reviews:</h2>
-              <ReviewSection>
-                {packageDetail.reviews.map((review, idx) => (
-                  <ReviewCard key={idx}>
-                    <RateHolder>
-                      <StarContainer>
-                        {[1, 2, 3, 4, 5].map((starIndex) => (
-                          <Star
-                          key={starIndex}
-                          filled={starIndex <= review.rating}
-                          >
-                            ★
-                          </Star>
-                        ))}
-                      </StarContainer>
-                      <ReviewDate>Reviewed on: {new Date(review.date).toLocaleDateString()}</ReviewDate>
-                    </RateHolder>
-                        <h4 style={{margin:'4px 0'}}>{review.user.username}</h4>
-                    <ReviewText>{review.description}</ReviewText>
-                  </ReviewCard>
-                ))}
-              </ReviewSection>
-              </>:null}
+              {packageDetail.reviews.length > 0 ?
+                <>
+                  <h2 style={{ margin: "5% 0 0" }}>Package Reviews:</h2>
+                  <ReviewSection>
+                    {packageDetail.reviews.map((review, idx) => (
+                      <ReviewCard key={idx}>
+                        <RateHolder>
+                          <StarContainer>
+                            {[1, 2, 3, 4, 5].map((starIndex) => (
+                              <Star
+                                key={starIndex}
+                                filled={starIndex <= review.rating}
+                              >
+                                ★
+                              </Star>
+                            ))}
+                          </StarContainer>
+                          <ReviewDate>Reviewed on: {new Date(review.date).toLocaleDateString()}</ReviewDate>
+                        </RateHolder>
+                        <h4 style={{ margin: '4px 0' }}>{review.user.username}</h4>
+                        <ReviewText>{review.description}</ReviewText>
+                      </ReviewCard>
+                    ))}
+                  </ReviewSection>
+                </> : null}
             </div>
           </PackageDetails>
         </div>
-      )}
+      ) : <Loader />}
     </Template>
   );
 };

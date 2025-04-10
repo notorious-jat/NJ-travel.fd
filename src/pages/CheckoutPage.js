@@ -119,6 +119,7 @@ const AvailabilityButton = styled.button`
 `;
 
 const CheckoutPage = () => {
+    const today = new Date().toISOString().split('T')[0];
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [packageDetail, setPackageDetail] = useState({});
   const [quantity, setQuantity] = useState(1);
@@ -202,11 +203,10 @@ const CheckoutPage = () => {
       fetchPackageData();
     }
   }, [isLoggedIn, id, quantity]);
-
   useEffect(() => {
     setSelectedImage(packageDetail?.images?.[0]);
   }, [packageDetail]);
-
+  
   useEffect(() => {
     if (publicKey) {
       setStripePromise(loadStripe(publicKey)); // Set stripePromise once the publicKey is available
@@ -307,6 +307,7 @@ const CheckoutPage = () => {
                           id="startDate"
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
+                          min={today}
                         />
                       </div>
                       <div>
@@ -315,6 +316,7 @@ const CheckoutPage = () => {
                           type="number"
                           id="numOfDays"
                           min="1"
+                          max={packageDetail?.activities?.length}
                           value={numOfDays}
                           onChange={(e) => setNumOfDays(e.target.value)}
                         />

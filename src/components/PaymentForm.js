@@ -71,7 +71,13 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate
               );
               localStorage.removeItem('cart')
               toast.success("Package purchased successfully!");
-              navigate(`/myorders`);
+              console.log({jj:response.data});
+              if(response?.data?.package?._id){
+                navigate("/myorders/"+response.data.package?._id)
+              }else{
+                navigate(`/myorders`);
+              }
+              return;
             } else {
               toast.error("Please login to prchase a package");
               localStorage.removeItem("token");
@@ -117,7 +123,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate
 
       {/* Checkout Button */}
       <CheckoutButton onClick={handlePayment}>
-        Pay ${packageDetail.price * quantity*duration}
+        Pay ₹{packageDetail.price * quantity*duration}
       </CheckoutButton>
     </>
   );

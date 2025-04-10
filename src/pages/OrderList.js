@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import ReviewModal from '../components/ReviewModal';
 import { toast } from 'react-toastify';
 import Template from '../components/Template';
+import Loader from '../components/Loader';
 
 // Styled Components
 const OrderListWrapper = styled.div`
@@ -198,7 +199,7 @@ const OrderList = () => {
 
     return (
         <Template>
-            {loading ? <div>Loading...</div> :
+            {loading ? <Loader/> :
                 <OrderListWrapper>
                     <Title>Your Orders</Title>
                     {orders.length === 0 ? (
@@ -217,8 +218,18 @@ const OrderList = () => {
                                     {/* Show Travel Package Information */}
                                     <TravelInfo>
                                         <TravelName onClick={() => navigationHandler(order.travel._id)} title='click to see detttails'>{order.travel.name}</TravelName>
-                                        <OrderInfo><strong>Person:</strong>{order.quantity}</OrderInfo>
+                                        <div style={{display:'flex',justifyContent:'space-between'}}>
+                                          <div style={{width:'50%'}}>
+                                        <OrderInfo><strong>Number of Person:</strong>&nbsp;{order.quantity}</OrderInfo>
+                                        <OrderInfo><strong>Status:</strong>&nbsp;{order.status=="paid"?order.status:'Cancelled'}</OrderInfo>
                                         <OrderInfo><strong>Total:</strong> ₹{order.amount}</OrderInfo>
+                                          </div>
+                                          <div style={{width:'50%',textAlign:'end'}}>
+                                        <OrderInfo><strong>Duration:</strong> {order.duration} Day {order.duration>1 ? `& ${order.duration-1} Night`:null}</OrderInfo>
+                                        <OrderInfo><strong>Start Date:</strong> {new Date(order.bookingStartDate).toLocaleDateString()}</OrderInfo>
+                                        <OrderInfo><strong>End Date:</strong> {new Date(order.bookingEndDate).toLocaleDateString()}</OrderInfo>
+                                          </div>
+                                        </div>
                                     </TravelInfo>
 
                                     {/* Check if User has Reviewed the Travel Package */}

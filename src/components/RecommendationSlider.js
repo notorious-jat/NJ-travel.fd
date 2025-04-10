@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+const Title = styled.h2`
+// text-align:center;
+margin-top:3rem;
+
+`
+
 const SliderWrapper = styled.div`
   width: 80%;
   margin: 0 auto;
@@ -23,8 +29,8 @@ const TestimonialCard = styled.div`
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   `;
-  
-  const UserImg = styled.img`
+
+const UserImg = styled.img`
   width: 250px;
   height: 250px;
   border-radius: 50%;
@@ -52,9 +58,17 @@ const Arrow = styled.div`
   ${props => (props.left ? 'left: 0;' : 'right: 0;')}
   transform: translateY(-50%);
   font-size: 2rem;
-  color: #333;
   cursor: pointer;
   z-index: 1;
+  padding:5px;
+  color: #fff;
+  background:#666;
+  border-radius: 5px;
+  &:hover{
+    color: #333;
+    background:#fff;
+    border:0.5px solid #ccc;
+  }
 `;
 
 
@@ -104,21 +118,24 @@ const Recommendations = () => {
   }, [currentIndex]);
 
   return (
-    <SliderWrapper>
-      <Arrow left onClick={goToPrev}>&lt;</Arrow>
-      <SlideContainer style={{ transform: `translateX(-${(currentIndex * 50)}%)` }}>
-        {recommendations.map(rec => (
-          <TestimonialCard key={rec._id}>
-            <a href={`/package/${rec._id}`} style={{textDecoration:'none'}}>
-            <UserImg src={'http://localhost:5001/'+rec?.images?.[0]} alt={rec.name} />
-            <Name>{rec.name}</Name>
-            <Description>{rec.description?.slice(0,50)}</Description>
-            </a>
-          </TestimonialCard>
-        ))}
-      </SlideContainer>
-      <Arrow onClick={goToNext}>&gt;</Arrow>
-    </SliderWrapper>
+    <>
+      <Title>Recommended Packages</Title>
+      <SliderWrapper>
+        <Arrow left onClick={goToPrev}>&lt;</Arrow>
+        <SlideContainer style={{ transform: `translateX(-${(currentIndex * 50)}%)` }}>
+          {recommendations.map(rec => (
+            <TestimonialCard key={rec._id}>
+              <a href={`/package/${rec._id}`} style={{ textDecoration: 'none' }}>
+                <UserImg src={'http://localhost:5001/' + rec?.images?.[0]} alt={rec.name} />
+                <Name>{rec.name}</Name>
+                <Description>{rec.description?.slice(0, 50)}</Description>
+              </a>
+            </TestimonialCard>
+          ))}
+        </SlideContainer>
+        <Arrow onClick={goToNext}>&gt;</Arrow>
+      </SliderWrapper>
+    </>
   );
 };
 

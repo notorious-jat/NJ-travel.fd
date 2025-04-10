@@ -164,7 +164,6 @@ const PackageListPage = () => {
                   <TableHeader>Name</TableHeader>
                   <TableHeader>City</TableHeader>
                   <TableHeader>Owner</TableHeader>
-                  <TableHeader>Duration</TableHeader>
                   <TableHeader>Price</TableHeader>
                   <TableHeader>Created At</TableHeader>
                   <TableHeader>Actions</TableHeader>
@@ -176,7 +175,6 @@ const PackageListPage = () => {
                     <TableCell>{pkg.name}</TableCell>
                     <TableCell>{pkg.city.name}</TableCell>
                     <TableCell>{pkg.createdBy.username}</TableCell>
-                    <TableCell>{pkg.duration}</TableCell>
                     <TableCell>₹{pkg.price}</TableCell>
                     <TableCell>{pkg.createdAt}</TableCell>
                     <TableCell>

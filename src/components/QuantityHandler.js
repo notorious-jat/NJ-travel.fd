@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import styled from "styled-components";
+const Label = styled.div`
+
+`
 
 // Component for handling quantity with limits
 const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
@@ -34,7 +38,8 @@ const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
   };
 
   return (
-    <>
+    <div style={{display:'flex',alignItems:'end',gap:'5px'}}>
+    <Label>Number of Persons:</Label>
     <div style={styles.container}>
       <button style={styles.button} onClick={decreaseQty}>
         -
@@ -44,7 +49,7 @@ const QuantityHandler = ({ initialQty = 1, onQtyChange }) => {
         +
       </button>
     </div>
-    </>
+    </div>
   );
 };
 
