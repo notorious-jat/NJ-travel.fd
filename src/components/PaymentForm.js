@@ -37,7 +37,7 @@ const CheckoutButton = styled.button`
   }
 `;
 
-const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate}) => {
+const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,usersData,startDate}) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate
     } else if (paymentIntent.status === "succeeded") {
       toast.success("Payment successful!");
       let data = {
-        amount:(packageDetail.price*quantity*duration), quantity, paymentId:paymentIntent.id, travel:packageDetail._id,duration,startDate
+        amount:(packageDetail.price*quantity*duration), quantity, paymentId:paymentIntent.id, travel:packageDetail._id,duration,startDate,usersData
       }
       try {
             const token = localStorage.getItem("token");
@@ -71,7 +71,6 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,startDate
               );
               localStorage.removeItem('cart')
               toast.success("Package purchased successfully!");
-              console.log({jj:response.data});
               if(response?.data?.package?._id){
                 navigate("/myorders/"+response.data.package?._id)
               }else{

@@ -173,7 +173,7 @@ const UserListPage = () => {
               <tr>
                 <TableHeader>Username</TableHeader>
                 <TableHeader>Email</TableHeader>
-                <TableHeader>Role</TableHeader>
+                <TableHeader>Adhar Number</TableHeader>
                 <TableHeader>Created At</TableHeader>
               </tr>
             </thead>
@@ -182,7 +182,7 @@ const UserListPage = () => {
                 <TableRow key={user._id}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.userUniqueIdentifier??'NA'}</TableCell>
                   <TableCell>{user.createdAt}</TableCell>
                   {/* <TableCell>
                     <Button onClick={() => navigate(`/users/edit/${user._id}`)}>Edit</Button>

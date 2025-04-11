@@ -170,7 +170,7 @@ const PackagePage = ({ match }) => {
               <FaRupeeSign size={52} /><TextHolder>{packageDetail.price} INR</TextHolder>
             </TextContainer>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'sticky', bottom: '10px', zIndex: 11,background:'#fff' }}>
-            {packageDetail?.owned?
+            {(packageDetail?.owned && false)?
               <Button onClick={handleBookingDetail}>Book Details</Button>
             :
             <>

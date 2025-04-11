@@ -64,10 +64,19 @@ const Input = styled.input`
   border-radius: 4px;
 `;
 
+const Select = styled.select`
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  `
+
 const Revenue = () => {
   const [revenue, setRevenue] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // Combined search query (title, owner, price)
   const [filterDate, setFilterDate] = useState(""); // Date filter
+  const [filterMonth, setFilterMonth] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,65 +104,74 @@ const Revenue = () => {
     fetchRevenue();
   }, [navigate]);
 
-  // useMemo for optimized filtering
   const filteredRevenue = useMemo(() => {
     return revenue.filter((rev) => {
-      const ownedDate = new Date(rev.ownedDate);
+      const ownedDate = new Date(rev.bookingStartDate);
       const filterDateObj = new Date(filterDate);
 
-      // Apply combined search filters for title, owner, or price
+      // Search logic
       const searchMatch =
         searchQuery.trim() === "" ||
         rev.travel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         rev.ownedBy.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
         rev.amount.toString().includes(searchQuery);
 
-      // Apply date filter
+      // Date filter
       const dateMatch = filterDate
         ? ownedDate.toDateString() === filterDateObj.toDateString()
         : true;
 
-      return searchMatch && dateMatch;
+      // Month filter
+      const monthMatch =
+        filterMonth === "all"
+          ? true
+          : ownedDate.getMonth() === parseInt(filterMonth.split("-")[1]) - 1 &&
+          ownedDate.getFullYear() === parseInt(filterMonth.split("-")[0]);
+
+      return searchMatch && dateMatch && monthMatch;
     });
-  }, [revenue, searchQuery, filterDate]); // Dependencies: re-run the filter when these change
+  }, [revenue, searchQuery, filterDate, filterMonth]);
+
 
   // This function handles when the Cancel button is clicked
   const handleCancel = async (packageId) => {
-    
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const headers = {
-            authorization: `Bearer ${token}`,
-          };
-    
-          // Make the API request to update the status to 'refunded' and set the cancelAt field
-          const response = await axios.put(
-            `http://localhost:5001/api/travel/update-status/${packageId}`,
-            { status: "refunded" }, // Updating the status to 'refunded'
-            { headers }
-          );
-    
-          // If the status update is successful
-          toast.success(`Successfully cancelled payment with ID: ${packageId}`);
-          console.log(response.data); // You can log the response for debugging
-          window.location.reload()
-          // Optionally update the state here or trigger a refresh if necessary
-        } else {
-          toast.error("Please login to cancel the payment.");
-          localStorage.clear();
-          // Optionally redirect the user to the login page
-        }
-      } catch (error) {
-        // Handle errors if the request fails
-        console.error("Error cancelling payment:", error);
-        toast.error(error.response ? error.response.data.message : "Something went wrong");
-      }
-    };
 
-    const handleDetail=(id)=>{
-      navigate("/cities/revenue/"+id)
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const headers = {
+          authorization: `Bearer ${token}`,
+        };
+
+        // Make the API request to update the status to 'refunded' and set the cancelAt field
+        const response = await axios.put(
+          `http://localhost:5001/api/travel/update-status/${packageId}`,
+          { status: "refunded" }, // Updating the status to 'refunded'
+          { headers }
+        );
+
+        // If the status update is successful
+        toast.success(`Successfully cancelled payment with ID: ${packageId}`);
+        console.log(response.data); // You can log the response for debugging
+        window.location.reload()
+        // Optionally update the state here or trigger a refresh if necessary
+      } else {
+        toast.error("Please login to cancel the payment.");
+        localStorage.clear();
+        // Optionally redirect the user to the login page
+      }
+    } catch (error) {
+      // Handle errors if the request fails
+      console.error("Error cancelling payment:", error);
+      toast.error(error.response ? error.response.data.message : "Something went wrong");
     }
+  };
+
+  const handleDetail = (id) => {
+    navigate("/cities/revenue/" + id)
+  }
+
+  const currentYear = new Date().getFullYear();
 
   return (
     <>
@@ -170,6 +188,26 @@ const Revenue = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)} // Just update searchQuery state
             />
+
+            <Input
+              as="select"
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              style={{ marginLeft: "10px" }}
+            >
+              <option value="all">All Months</option>
+              {Array.from({ length: 12 }).map((_, idx) => {
+                const month = String(idx + 1).padStart(2, "0");
+                const label = new Date(currentYear, idx).toLocaleString("default", {
+                  month: "long",
+                });
+                return (
+                  <option key={`${currentYear}-${month}`} value={`${currentYear}-${month}`}>
+                    {label} {currentYear}
+                  </option>
+                );
+              })}
+            </Input>
             {/* Date Filter */}
             <Input
               type="date"
@@ -204,21 +242,21 @@ const Revenue = () => {
                   <TableCell>{rev.quantity}</TableCell>
                   <TableCell>{new Date(rev.ownedDate).toLocaleDateString()}</TableCell>
                   <TableCell>{rev.status}
-                    {rev.cancelAt ? 
-                    <>
-                     &nbsp;process at&nbsp;
-                    {new Date(rev.cancelAt).toLocaleDateString()}
-                    </>
-                    :null}
+                    {rev.cancelAt ?
+                      <>
+                        &nbsp;process at&nbsp;
+                        {new Date(rev.cancelAt).toLocaleDateString()}
+                      </>
+                      : null}
                   </TableCell>
-                  <TableCell>{rev.duration} Days {rev.duration >1 ?` & ${rev.duration-1} Nights`:null}</TableCell>
+                  <TableCell>{rev.duration} Days {rev.duration > 1 ? ` & ${rev.duration - 1} Nights` : null}</TableCell>
                   <TableCell>{new Date(rev.bookingStartDate).toLocaleDateString()}</TableCell>
                   <TableCell>{new Date(rev.bookingEndDate).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    {rev.cancelAt?
-                    "Cancelled"
-                    :
-                    <Button onClick={() => handleCancel(rev._id)}>Cancel</Button>}
+                    {rev.cancelAt ?
+                      "Cancelled"
+                      :
+                      <Button onClick={() => handleCancel(rev._id)}>Cancel</Button>}
                     <Button onClick={() => handleDetail(rev._id)}>Details</Button>
                   </TableCell>
                 </TableRow>

@@ -90,7 +90,7 @@ const ActionButton = styled.button`
 
   &:hover {
     background: ${({ type }) =>
-      type === "cancel" ? "#d9363e" : type === "print" ? "#222" : "#0044cc"};
+    type === "cancel" ? "#d9363e" : type === "print" ? "#222" : "#0044cc"};
   }
 `;
 
@@ -128,7 +128,7 @@ const RevenueDetails = () => {
   }, [id]);
 
   if (!packageData) {
-    return <LeftMenu><Loader/></LeftMenu>;
+    return <LeftMenu><Loader /></LeftMenu>;
   }
 
 
@@ -177,8 +177,8 @@ const RevenueDetails = () => {
         <Tabs>
           <TabList>
             <Tab>🏞 Package</Tab>
-                        <Tab>🏕️ Activities</Tab>
-            
+            <Tab>🏕️ Activities</Tab>
+
             <Tab>💳 Payment</Tab>
             <Tab>👤 User</Tab>
             <Tab>📅 Booking</Tab>
@@ -215,34 +215,34 @@ const RevenueDetails = () => {
                   </Value>
 
 
-                  {packageData.includesFlight &&packageData?.flightName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesFlight && packageData?.flightName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Flight Details:</Label>
                       {packageData?.flightName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
 
-                  {packageData.includesTransport &&packageData?.transportName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesTransport && packageData?.transportName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Transport Details:</Label>
                       {packageData?.transportName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
 
-                  {packageData.includesHotel &&packageData?.hotelName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesHotel && packageData?.hotelName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Hotel Details:</Label>
                       {packageData?.hotelName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
                 </div>
               </Grid>
             </Card>
           </TabPanel>
-<TabPanel>
+          <TabPanel>
             <Card>
               <SectionTitle>Activities Details</SectionTitle>
               {packageData.travel.activities.slice(0, packageData.duration).map((act, index) => (
@@ -253,7 +253,7 @@ const RevenueDetails = () => {
               ))}
             </Card>
           </TabPanel>
-         
+
           {/* Payment Details */}
           <TabPanel>
             <Card>
@@ -281,7 +281,11 @@ const RevenueDetails = () => {
 
               <Label>Email:</Label>
               <Value>{packageData.ownedBy.email}</Value>
-
+              {packageData.ownedBy.userUniqueIdentifier &&
+                <>
+                  <Label>Adhar Number:</Label>
+                  <Value>{packageData.ownedBy.userUniqueIdentifier}</Value>
+                </>}
               <Label>Account Created:</Label>
               <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
             </Card>
@@ -295,8 +299,19 @@ const RevenueDetails = () => {
               <Value>{packageData.quantity}</Value>
 
               <Label>Duration:</Label>
-              <Value>{packageData.duration} Days {packageData.duration >1 ?` & ${packageData.duration-1} Nights`:null}</Value>
-
+              <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
+              {packageData.usersData.length ?
+                <>
+                  <Label>User Details</Label>
+                  <ol>
+                    {
+                      packageData.usersData.map((user) => (
+                        <li><Value>{user.name} ({user.contactInfo})</Value></li>
+                      ))
+                    }
+                  </ol>
+                </>
+                : null}
               <Label>Booking Status:</Label>
               <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>
 

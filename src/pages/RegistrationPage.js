@@ -60,6 +60,7 @@ const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userUniqueIdentifier, setUserUniqueIdentifier] = useState("")
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -67,12 +68,20 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    const aadhaarRegex = /^\d{12}$/;
+    if (!aadhaarRegex.test(userUniqueIdentifier)) {
+      setError("Aadhaar number must be exactly 12 digits.");
+      setSuccess("");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:5001/api/auth/signup", {
         username,
         email,
         password,
-        role:'user',
+        userUniqueIdentifier,
+        role: 'user',
       });
       setSuccess("User registered successfully!");
       setError(""); // Clear any previous errors
@@ -97,6 +106,19 @@ const RegisterPage = () => {
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <Input
+              type="text"
+              placeholder="Enter your adhar card number"
+              value={userUniqueIdentifier}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                  setUserUniqueIdentifier(value);
+                }
+              }}
+              maxLength={12}
               required
             />
             <Input

@@ -118,11 +118,41 @@ const AvailabilityButton = styled.button`
   }
 `;
 
+
+const CalculationBox = styled.div`
+  background-color: #f4f4f4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  width: fit-content;
+  border: 1px solid #ccc;
+`;
+
+const Formula = styled.div`
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+`;
+
+const Value = styled.span`
+  font-weight: bold;
+  color: #007bff;
+`;
+
+const TotalAmount = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-top: 1rem;
+`;
+
+
 const CheckoutPage = () => {
-    const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [packageDetail, setPackageDetail] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [usersData, setUsersData] = useState([{ name: "", contactInfo: "" }]);
+  const [isAllDataValid, setIsAllDataValid] = useState(false);
   const [clientSecret, setClientSecret] = useState(""); // Store the client secret
   const [publicKey, setPublicKey] = useState("");
   const [stripePromise, setStripePromise] = useState(null); // store stripePromise
@@ -206,13 +236,12 @@ const CheckoutPage = () => {
   useEffect(() => {
     setSelectedImage(packageDetail?.images?.[0]);
   }, [packageDetail]);
-  
+
   useEffect(() => {
     if (publicKey) {
       setStripePromise(loadStripe(publicKey)); // Set stripePromise once the publicKey is available
     }
   }, [publicKey]);
-
   const handleThumbnailClick = (image) => {
     setSelectedImage(image);
   };
@@ -233,7 +262,7 @@ const CheckoutPage = () => {
           {
             packageId: packageDetail._id,
             startDate,
-            numOfDays,
+            numOfDays
           },
           { headers }
         );
@@ -253,6 +282,29 @@ const CheckoutPage = () => {
       }
     }
   };
+
+  const handleUserDataChange = (index, field, value) => {
+    const updatedUsers = [...usersData];
+    updatedUsers[index][field] = value;
+    setUsersData(updatedUsers);
+  };
+
+  const saveUserDetail = () => {
+    const allValid = usersData.every(
+      (user) => user.name.trim() && user.contactInfo.trim()
+    );
+    if (!allValid) {
+      toast.error("Please fill in all fields.");
+    }
+    setIsAllDataValid(allValid);
+  }
+  useEffect(() => {
+    const newData = Array.from({ length: quantity }, (_, i) => ({
+      name: usersData[i]?.name || "",
+      contactInfo: usersData[i]?.contactInfo || "",
+    }));
+    setUsersData(newData);
+  }, [quantity]);
 
   return (
     <>
@@ -287,51 +339,89 @@ const CheckoutPage = () => {
               <Title>{packageDetail.name}</Title>
               <Description>{packageDetail.subtitle}</Description>
               <PaymentWrapper>
-                <Price>₹{packageDetail.price}</Price>
-                <QuantityHandler initialQty={quantity} onQtyChange={setQuantity} />
+                <Price>₹{packageDetail.price}/Day</Price>
+                {!isAllDataValid ? <QuantityHandler initialQty={quantity} onQtyChange={setQuantity} /> : <div style={{ textAlign: 'start' }}>
+                  {/* <p>
+                    <strong>For Person:</strong> {quantity}</p>
+                    <p>
+                      <strong>For Days:</strong> {numOfDays}</p> */}
+                  <CalculationBox>
+                    <Formula>
+                      Formula: <Value>Price × Days × Quantity</Value>
+                    </Formula>
+                    <Formula>
+                      = <Value>₹{packageDetail.price}</Value> × <Value>{numOfDays}</Value> × <Value>{quantity}</Value>
+                    </Formula>
+                    <TotalAmount>Total: ₹{packageDetail.price * quantity * numOfDays}</TotalAmount>
+                  </CalculationBox>
+                </div>}
                 <div style={{ marginTop: '20px' }}>
-                  {isAvailable ? (
-                    <PaymentForm
-                      clientSecret={clientSecret}
-                      packageDetail={packageDetail}
-                      quantity={quantity}
-                      duration={numOfDays}
-                      startDate={startDate}
-                    />
-                  ) : (
-                    <>
+                  {isAvailable ?
+                    !isAllDataValid ?
                       <div>
-                        <label htmlFor="startDate">Select Start Date:</label>&nbsp;
-                        <InputField
-                          type="date"
-                          id="startDate"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          min={today}
-                        />
+                        {usersData.map((user, index) => (
+                          <div key={index} style={{ marginBottom: '1rem', display: 'flex', gap: '10px' }}>
+                            <InputField
+                              type="text"
+                              placeholder={`Name for user ${index + 1}`}
+                              value={user.name}
+                              onChange={(e) => handleUserDataChange(index, "name", e.target.value)}
+                            />
+                            <InputField
+                              type="text"
+                              placeholder={`Contact info for user ${index + 1}`}
+                              value={user.contactInfo}
+                              onChange={(e) => handleUserDataChange(index, "contactInfo", e.target.value)}
+                            />
+                          </div>
+                        ))}
+                        <AvailabilityButton onClick={saveUserDetail}>
+                          Save User Details
+                        </AvailabilityButton>
                       </div>
-                      <div>
-                        <label htmlFor="numOfDays">Number of Days:</label>&nbsp;
-                        <InputField
-                          type="number"
-                          id="numOfDays"
-                          min="1"
-                          max={packageDetail?.activities?.length}
-                          value={numOfDays}
-                          onChange={(e) => setNumOfDays(e.target.value)}
-                        />
-                      </div>
-                      {/* {!startDate || !numOfDays ? (
+                      :
+                      <PaymentForm
+                        clientSecret={clientSecret}
+                        packageDetail={packageDetail}
+                        quantity={quantity}
+                        duration={numOfDays}
+                        startDate={startDate}
+                        usersData={usersData}
+                      />
+                    : (
+                      <>
+                        <div>
+                          <label htmlFor="startDate">Select Start Date:</label>&nbsp;
+                          <InputField
+                            type="date"
+                            id="startDate"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            min={today}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="numOfDays">Number of Days:</label>&nbsp;
+                          <InputField
+                            type="number"
+                            id="numOfDays"
+                            min="1"
+                            max={packageDetail?.activities?.length}
+                            value={numOfDays}
+                            onChange={(e) => setNumOfDays(e.target.value)}
+                          />
+                        </div>
+                        {/* {!startDate || !numOfDays ? (
                   <div style={{ color: "red" }}>
                     Please fill in both fields before checking availability.
                   </div>
                 ) : ( */}
-                      <AvailabilityButton onClick={checkAvailability}>
-                        Check Availability
-                      </AvailabilityButton>
-                      {/* )} */}
-                    </>
-                  )}
+                        <AvailabilityButton onClick={checkAvailability}>
+                          Check Availability
+                        </AvailabilityButton>
+                        {/* )} */}
+                      </>
+                    )}
                 </div>
               </PaymentWrapper>
             </ProductInfoWrapper>

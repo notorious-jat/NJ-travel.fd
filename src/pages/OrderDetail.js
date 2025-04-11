@@ -198,27 +198,27 @@ const OrderDetail = () => {
                     {packageData.includesTransport && "🚂 Transport"}
                   </Value>
 
-                  {packageData.includesFlight &&packageData?.flightName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesFlight && packageData?.flightName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Flight Details:</Label>
                       {packageData?.flightName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
 
-                  {packageData.includesTransport &&packageData?.transportName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesTransport && packageData?.transportName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Transport Details:</Label>
                       {packageData?.transportName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
 
-                  {packageData.includesHotel &&packageData?.hotelName &&
-                    <div style={{marginBottom:'10px'}}>
+                  {packageData.includesHotel && packageData?.hotelName &&
+                    <div style={{ marginBottom: '10px' }}>
                       <Label>Hotel Details:</Label>
                       {packageData?.hotelName?.split(',').map((line, index) => (
-                        <Value style={{margin:0}} key={index}>{line.trim()}</Value>
+                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
                       ))}
                     </div>}
                 </div>
@@ -264,8 +264,14 @@ const OrderDetail = () => {
               <Label>Email:</Label>
               <Value>{packageData.ownedBy.email}</Value>
 
+              {packageData.ownedBy.userUniqueIdentifier &&
+                <>
+                  <Label>Adhar Number:</Label>
+                  <Value>{packageData.ownedBy.userUniqueIdentifier}</Value>
+                </>}
               <Label>Account Created:</Label>
               <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
+
             </Card>
           </TabPanel>
 
@@ -278,6 +284,19 @@ const OrderDetail = () => {
 
               <Label>Duration:</Label>
               <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
+
+              {packageData.usersData.length ?
+                <>
+                  <Label>User Details</Label>
+                  <ol>
+                    {
+                      packageData.usersData.map((user) => (
+                        <li><Value>{user.name} ({user.contactInfo})</Value></li>
+                      ))
+                    }
+                  </ol>
+                </>
+                : null}
 
               <Label>Booking Status:</Label>
               <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>

@@ -113,8 +113,8 @@ const PackageListPage = () => {
       // Checking if the name, price, duration, or username matches the filter
       return (
         pkg?.name?.toLowerCase().includes(filterText) || // Match name
-        pkg?.price?.toString().includes(filterText) ||   // Match price (converted to string)
-        pkg?.duration?.toLowerCase().includes(filterText) || // Match duration
+        pkg?.city?.name?.toLowerCase().includes(filterText) || 
+        pkg?.price?.toString().includes(filterText) || 
         pkg?.createdBy?.username?.toLowerCase().includes(filterText) // Match owner username
       );
     });
