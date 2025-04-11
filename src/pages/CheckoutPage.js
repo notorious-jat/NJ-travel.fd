@@ -124,12 +124,11 @@ const CalculationBox = styled.div`
   padding: 1.5rem;
   border-radius: 8px;
   margin-top: 2rem;
-  width: fit-content;
   border: 1px solid #ccc;
 `;
 
 const Formula = styled.div`
-  font-size: 1.2rem;
+  font-size: 0.8rem;
   margin-bottom: 0.5rem;
 `;
 
@@ -139,7 +138,7 @@ const Value = styled.span`
 `;
 
 const TotalAmount = styled.div`
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #28a745;
   margin-top: 1rem;
@@ -347,7 +346,7 @@ const CheckoutPage = () => {
                       <strong>For Days:</strong> {numOfDays}</p> */}
                   <CalculationBox>
                     <Formula>
-                      Formula: <Value>Price × Days × Quantity</Value>
+                      Price Details: <Value>Price × Days × Quantity</Value>
                     </Formula>
                     <Formula>
                       = <Value>₹{packageDetail.price}</Value> × <Value>{numOfDays}</Value> × <Value>{quantity}</Value>

@@ -174,7 +174,7 @@ const PackagePage = ({ match }) => {
               <Button onClick={handleBookingDetail}>Book Details</Button>
             :
             <>
-              <QuantityHandler onQtyChange={setQty} />
+              {/* <QuantityHandler onQtyChange={setQty} /> */}
               <Button onClick={buyNowHandler}>Book now</Button>
             </>
             }
