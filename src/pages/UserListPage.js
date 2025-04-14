@@ -171,6 +171,7 @@ const UserListPage = () => {
           <Table>
             <thead>
               <tr>
+                <TableHeader>Id</TableHeader>
                 <TableHeader>Username</TableHeader>
                 <TableHeader>Email</TableHeader>
                 <TableHeader>Adhar Number</TableHeader>
@@ -180,6 +181,7 @@ const UserListPage = () => {
             <tbody>
               {filteredUsers.map((user) => (
                 <TableRow key={user._id}>
+                  <TableCell>{user._id}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.userUniqueIdentifier??'NA'}</TableCell>

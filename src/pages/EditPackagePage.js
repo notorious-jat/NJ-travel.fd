@@ -85,6 +85,7 @@ const EditPackagePage = () => {
     price: 0,
     status: "",
     images: [],
+    rooms:[]
   });
 
   useEffect(() => {
@@ -153,7 +154,7 @@ const EditPackagePage = () => {
     e.preventDefault();
     const form = new FormData();
     Object.keys(formData).forEach((key) => {
-      if (key !== "images" && key !== "activities") {
+      if (key !== "images" && key !== "activities" && key !== "rooms") {
         form.append(key, formData[key]);
       }
     });
@@ -162,10 +163,13 @@ const EditPackagePage = () => {
     if (formData?.images) {
       Array.from(formData?.images).forEach((file) => form.append("images", file));
     }
-    if (formData?.activities) {
+    if (formData?.activities.length) {
       formData?.activities?.forEach((activity, index) => {
         form.append(`activities[${index}]`, activity);
       });
+    }
+    if (formData?.rooms.length) {
+      form.append("rooms", JSON.stringify(formData.rooms));
     }
     try {
       const token = localStorage.getItem("token");
@@ -219,6 +223,45 @@ const EditPackagePage = () => {
     setFormData((prev) => ({
       ...prev,
       activities: updated,
+    }));
+  };
+
+  const addRoom = () => {
+    setFormData((prev) => ({
+      ...prev,
+      rooms: [
+        ...prev.rooms,
+        { name: "", description: "", price: 0, includeWithPackage: false },
+      ],
+    }));
+  };
+  
+  const updateRoom = (index, field, value) => {
+    const updatedRooms = [...formData.rooms];
+    updatedRooms[index][field] = field === "price" ? parseFloat(value) : value;
+    setFormData((prev) => ({
+      ...prev,
+      rooms: updatedRooms,
+    }));
+  };
+  
+  const setIncludedRoom = (index) => {
+    const updatedRooms = formData.rooms.map((room, i) => ({
+      ...room,
+      includeWithPackage: i === index,
+    }));
+    setFormData((prev) => ({
+      ...prev,
+      rooms: updatedRooms,
+    }));
+  };
+  
+  const removeRoom = (index) => {
+    const updatedRooms = [...formData.rooms];
+    updatedRooms.splice(index, 1);
+    setFormData((prev) => ({
+      ...prev,
+      rooms: updatedRooms,
     }));
   };
   return (
@@ -408,6 +451,54 @@ const EditPackagePage = () => {
               + Add Activity
             </Button>
           </div>
+          <div style={{ marginTop: "20px" }}>
+  <label><strong>Rooms</strong></label>
+  {formData.rooms.map((room, index) => (
+    <div key={index} style={{ border: "1px solid #ddd", padding: "15px", marginBottom: "10px", borderRadius: "5px" }}>
+      <InputField
+        type="text"
+        placeholder="Room Name"
+        value={room.name}
+        onChange={(e) => updateRoom(index, "name", e.target.value)}
+        required
+      />
+      <TextArea
+        placeholder="Room Description"
+        value={room.description}
+        onChange={(e) => updateRoom(index, "description", e.target.value)}
+        required
+      />
+      <InputField
+        type="number"
+        placeholder="Room Price"
+        value={room.price}
+        onChange={(e) => updateRoom(index, "price", e.target.value)}
+        required
+      />
+
+      <label>
+        <input
+          type="radio"
+          name="includeWithPackage" // All radios should share the same name
+          checked={room.includeWithPackage}
+          onChange={() => setIncludedRoom(index)}
+        />
+        Include with Package
+      </label>
+
+      <Button
+        type="button"
+        onClick={() => removeRoom(index)}
+        style={{ background: "#ff4d4f", color: "#fff", marginTop: "10px" }}
+      >
+        Remove Room
+      </Button>
+    </div>
+  ))}
+  <Button type="button" onClick={addRoom}>
+    + Add Room
+  </Button>
+</div>
 
           <Button type="submit">Update Package</Button>
         </form>

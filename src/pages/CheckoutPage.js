@@ -144,6 +144,63 @@ const TotalAmount = styled.div`
   margin-top: 1rem;
 `;
 
+const RoomList = styled.div`
+display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
+`
+
+const RoomCard = styled.div`
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  &:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+    background-color: #fdfdfd;
+  }
+
+  &.selected {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+`;
+
+const RoomName = styled.h4`
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+`;
+
+const RoomDescription = styled.p`
+  margin: 0 0 10px;
+  color: #666;
+  font-size: 14px;
+`;
+
+const RoomPrice = styled.p`
+  font-weight: bold;
+  font-size: 15px;
+  color: #000;
+`;
+
+const RoomLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+`;
+
+const RoomRadio = styled.input`
+  margin-right: 10px;
+  accent-color: #1890ff;
+`;
 
 const CheckoutPage = () => {
   const today = new Date().toISOString().split('T')[0];
@@ -152,6 +209,9 @@ const CheckoutPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [usersData, setUsersData] = useState([{ name: "", contactInfo: "" }]);
   const [isAllDataValid, setIsAllDataValid] = useState(false);
+  const [selectRoom, setSelectRoom] = useState(null);
+  const [roomQty, setRoomQty] = useState(1);
+  const [showPayment, setShowPayment] = useState(false)
   const [clientSecret, setClientSecret] = useState(""); // Store the client secret
   const [publicKey, setPublicKey] = useState("");
   const [stripePromise, setStripePromise] = useState(null); // store stripePromise
@@ -159,6 +219,7 @@ const CheckoutPage = () => {
   const [startDate, setStartDate] = useState(null); // New state for start date
   const [numOfDays, setNumOfDays] = useState(1); // New state for number of days
   const [isAvailable, setIsAvailable] = useState(false); // State for availability check result
+  const [roomBill,setRoomBill] = useState({name:null,description:null,price:0,includeWithPackage:null,quantity:null})
 
   const navigate = useNavigate();
   let id = null;
@@ -217,6 +278,12 @@ const CheckoutPage = () => {
             `http://localhost:5001/api/travel/package/${id}`
           );
           setPackageDetail(response.data.data);
+          // Find index of the room that has includeWithPackage true
+          const selectedRoom = response.data.data.rooms.find((room) => room.includeWithPackage);
+
+          setShowPayment(response.data.data.rooms.length == 0 ? true : false)
+
+          setSelectRoom(selectedRoom ? selectedRoom._id : null);
           // Get the client secret for the payment
           const paymentResponse = await axios.post("http://localhost:5001/checkout", {
             package_id: id,
@@ -289,14 +356,32 @@ const CheckoutPage = () => {
   };
 
   const saveUserDetail = () => {
-    const allValid = usersData.every(
-      (user) => user.name.trim() && user.contactInfo.trim()
-    );
-    if (!allValid) {
-      toast.error("Please fill in all fields.");
-    }
+    let allValid = true;
+  
+    usersData.forEach((user, index) => {
+      const nameValid = user.name.trim().length > 0;
+      const contactInfo = user.contactInfo.trim();
+      const contactValid = (
+        contactInfo.length >= 9 &&
+        contactInfo.length <= 12 &&
+        /^[9]\d*$/.test(contactInfo)
+      );
+  
+      if (!nameValid) {
+        toast.error(`User ${index + 1}: Name is required.`);
+        allValid = false;
+      }
+  
+      if (!contactValid) {
+        toast.error(`User ${index + 1}: Contact must be 9-12 digits and start with 9.`);
+        allValid = false;
+      }
+    });
+  
     setIsAllDataValid(allValid);
-  }
+  };
+  
+
   useEffect(() => {
     const newData = Array.from({ length: quantity }, (_, i) => ({
       name: usersData[i]?.name || "",
@@ -305,6 +390,35 @@ const CheckoutPage = () => {
     setUsersData(newData);
   }, [quantity]);
 
+  const handleRoomSelect = (roomId) => {
+    setSelectRoom(roomId);
+  };
+  const handlePay = () => {
+    if(!selectRoom){
+      toast.error('Please select a room');
+      return
+    }
+    if(!roomQty || roomQty == "0"){
+      toast.error('Please select a room quantity');
+      return
+    }
+    if(roomQty > quantity){
+      toast.error('Room quantity is more than users');
+      return;
+    }
+    const selectedRoom = packageDetail.rooms.find((room) => room.includeWithPackage);
+    if(selectedRoom){
+      const newRoom = {
+        name: selectedRoom.name,
+        price: selectedRoom.includeWithPackage ? selectedRoom.price*(roomQty-1):selectedRoom.price*roomQty,
+        quantity: roomQty,
+        description:selectedRoom.description,
+        includeWithPackage:selectedRoom.includeWithPackage
+      }
+      setRoomBill(newRoom)
+    setShowPayment(true)
+    }
+  }
   return (
     <>
       <Navbar />
@@ -346,12 +460,12 @@ const CheckoutPage = () => {
                       <strong>For Days:</strong> {numOfDays}</p> */}
                   <CalculationBox>
                     <Formula>
-                      Price Details: <Value>Price × Days × Quantity</Value>
+                      Price Details: <Value>Price × Days × Quantity {roomQty > 1 ? `+ Room` : ''}</Value>
                     </Formula>
                     <Formula>
-                      = <Value>₹{packageDetail.price}</Value> × <Value>{numOfDays}</Value> × <Value>{quantity}</Value>
+                      = <Value>₹{packageDetail.price}</Value> × <Value>{numOfDays}</Value> × <Value>{quantity}</Value> {roomBill?.price ? `+ ${roomBill.price}` : ''}
                     </Formula>
-                    <TotalAmount>Total: ₹{packageDetail.price * quantity * numOfDays}</TotalAmount>
+                    <TotalAmount>Total: ₹{(packageDetail.price * quantity * numOfDays)+roomBill?.price||0}</TotalAmount>
                   </CalculationBox>
                 </div>}
                 <div style={{ marginTop: '20px' }}>
@@ -379,14 +493,49 @@ const CheckoutPage = () => {
                         </AvailabilityButton>
                       </div>
                       :
-                      <PaymentForm
-                        clientSecret={clientSecret}
-                        packageDetail={packageDetail}
-                        quantity={quantity}
-                        duration={numOfDays}
-                        startDate={startDate}
-                        usersData={usersData}
-                      />
+                      !showPayment ?
+                        <div>
+                          <h3>Rooms</h3>
+                          <RoomList>
+                            {packageDetail.rooms.map((room) => (
+                              <RoomCard
+                                key={room._id}
+                                className={selectRoom === room._id ? "selected" : ""}
+                                onClick={() => handleRoomSelect(room._id)}
+                              >
+                                <RoomName>{room.name}</RoomName>
+                                <RoomDescription>{room.description}</RoomDescription>
+                                <RoomPrice>₹ {room.price}</RoomPrice>
+                              </RoomCard>
+                            ))}
+                          </ RoomList>
+                          <div>
+
+                            <label htmlFor="roomQty">Number of Rooms:</label>&nbsp;
+                            <InputField
+                              type="number"
+                              id="roomQty"
+                              min="1"
+                              max={quantity}
+                              placeholder="Enter Room Quantity"
+                              value={roomQty}
+                              onChange={(e) => setRoomQty(e.target.value)}
+                            />
+                          </div>
+                          <AvailabilityButton onClick={handlePay}>&nbsp;
+                            Pay Now
+                          </AvailabilityButton>
+                        </div>
+                        :
+                        <PaymentForm
+                          clientSecret={clientSecret}
+                          packageDetail={packageDetail}
+                          quantity={quantity}
+                          duration={numOfDays}
+                          startDate={startDate}
+                          usersData={usersData}
+                          roomBill={roomBill}
+                        />
                     : (
                       <>
                         <div>

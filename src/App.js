@@ -21,6 +21,12 @@ import UserListPage from "./pages/UserListPage";
 import Explore from "./pages/Explore";
 import OrderDetail from "./pages/OrderDetail";
 import RevenueDetails from "./pages/RevenueDetails";
+import RevenueReport from "./pages/Report";
+import ReportDetailPage from "./pages/TravelPackageReportDetail";
+import UserReport from "./pages/UserReport";
+import VendorReport from "./pages/VendorReport";
+import UserReportDetails from "./pages/UserReportDetails";
+import VendorReportDetails from "./pages/VendorReportDetails";
 
 const App = () => {
   return (
@@ -45,6 +51,12 @@ const App = () => {
           <Route path="/cities/package" element={<PackageListPage />} />
           <Route path="/cities/revenue" element={<Revenue />} />
           <Route path="/cities/revenue/:id" element={<RevenueDetails/>}/>
+          <Route path="/cities/package/report" element={<RevenueReport />} />
+          <Route path="/cities/package/report/:id" element={<ReportDetailPage />} />
+          <Route path="/cities/user/report" element={<UserReport />} />
+          <Route path="/cities/user/report/:id" element={<UserReportDetails />} />
+          <Route path="/cities/vendor/report" element={<VendorReport />} />
+          <Route path="/cities/vendor/report/:id" element={<VendorReportDetails />} />
           <Route
             path="/cities/package/create"
             element={<CreatePackagePage />}

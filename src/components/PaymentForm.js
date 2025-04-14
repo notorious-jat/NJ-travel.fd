@@ -37,7 +37,7 @@ const CheckoutButton = styled.button`
   }
 `;
 
-const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,usersData,startDate}) => {
+const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,usersData,startDate,roomBill}) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,usersData
     } else if (paymentIntent.status === "succeeded") {
       toast.success("Payment successful!");
       let data = {
-        amount:(packageDetail.price*quantity*duration), quantity, paymentId:paymentIntent.id, travel:packageDetail._id,duration,startDate,usersData
+        amount:(packageDetail.price*quantity*duration)+roomBill?.price||0, quantity, paymentId:paymentIntent.id, travel:packageDetail._id,duration,startDate,usersData,roomDetails:roomBill
       }
       try {
             const token = localStorage.getItem("token");
@@ -122,7 +122,7 @@ const PaymentForm = ({ clientSecret, packageDetail, quantity ,duration,usersData
 
       {/* Checkout Button */}
       <CheckoutButton onClick={handlePayment}>
-        Pay ₹{packageDetail.price * quantity*duration}
+        Pay ₹{(packageDetail.price * quantity*duration)+roomBill?.price||0}
       </CheckoutButton>
     </>
   );

@@ -109,26 +109,33 @@ const PackageListPage = () => {
     const filtered = packages.filter((pkg) => {
       // Ensure the filter input is handled in a case-insensitive manner
       const filterText = filter?.toLowerCase() || "";
-  
+
       // Checking if the name, price, duration, or username matches the filter
       return (
         pkg?.name?.toLowerCase().includes(filterText) || // Match name
-        pkg?.city?.name?.toLowerCase().includes(filterText) || 
-        pkg?.price?.toString().includes(filterText) || 
+        pkg?.city?.name?.toLowerCase().includes(filterText) ||
+        pkg?.price?.toString().includes(filterText) ||
         pkg?.createdBy?.username?.toLowerCase().includes(filterText) // Match owner username
       );
     });
-  
+
     setFilteredPackages(filtered);
   }, [filter, packages]);
-  
+
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5001/api/travel/package/${id}`);
-      setPackages(packages.filter((pkg) => pkg._id !== id));
-      setFilteredPackages(filteredPackages.filter((pkg) => pkg._id !== id));
-      toast.success("Package deleted successfully!");
+      const token = localStorage.getItem("token");
+      if (token) {
+        let headers = { authorization: `Bearer ${token}` };
+        await axios.delete(`http://localhost:5001/api/travel/package/${id}`, { headers });
+        setPackages(packages.filter((pkg) => pkg._id !== id));
+        setFilteredPackages(filteredPackages.filter((pkg) => pkg._id !== id));
+        toast.success("Package deleted successfully!");
+      } else {
+        localStorage.clear();
+        navigate("/login"); // Redirect to login page
+      }
     } catch (error) {
       console.error("Error deleting package:", error);
       toast.error("Failed to delete package.");
@@ -161,9 +168,11 @@ const PackageListPage = () => {
             <Table>
               <thead>
                 <tr>
+                  <TableHeader>Package Id</TableHeader>
                   <TableHeader>Name</TableHeader>
                   <TableHeader>City</TableHeader>
                   <TableHeader>Owner</TableHeader>
+                  <TableHeader>Owner Id</TableHeader>
                   <TableHeader>Price</TableHeader>
                   <TableHeader>Created At</TableHeader>
                   <TableHeader>Actions</TableHeader>
@@ -172,9 +181,11 @@ const PackageListPage = () => {
               <tbody>
                 {filteredPackages.map((pkg) => (
                   <TableRow key={pkg._id}>
+                    <TableCell>{pkg._id}</TableCell>
                     <TableCell>{pkg.name}</TableCell>
                     <TableCell>{pkg.city.name}</TableCell>
                     <TableCell>{pkg.createdBy.username}</TableCell>
+                    <TableCell>{pkg.createdBy._id}</TableCell>
                     <TableCell>₹{pkg.price}</TableCell>
                     <TableCell>{pkg.createdAt}</TableCell>
                     <TableCell>

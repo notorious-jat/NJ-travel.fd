@@ -22,7 +22,7 @@ const SidebarItem = styled.button`
   border: none;
   color: #fff;
   font-size: 18px;
-  margin: 15px 0;
+  margin: 10px 0;
   text-align: left;
   width: 100%;
   cursor: pointer;
@@ -86,6 +86,9 @@ const LeftMenu = ({ children }) => {
         </SidebarItem>:null}
         {role == 'admin'?<SidebarItem onClick={() => navigate("/user")}>User</SidebarItem>:null}
         {role != 'user'?<SidebarItem onClick={() => navigate("/cities/revenue")}>Revenue</SidebarItem>:null}
+        {role != 'user'?<SidebarItem onClick={() => navigate("/cities/package/report")}>Package Report</SidebarItem>:null}
+        {role != 'user'?<SidebarItem onClick={() => navigate("/cities/user/report")}>User Report</SidebarItem>:null}
+        {role == 'admin'?<SidebarItem onClick={() => navigate("/cities/vendor/report")}>Vendor Report</SidebarItem>:null}
         <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
       </Sidebar>
       <ContentWrapper>{children}</ContentWrapper>

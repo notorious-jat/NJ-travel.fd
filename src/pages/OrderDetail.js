@@ -30,27 +30,30 @@ const Card = styled.div`
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
 `;
-
 const SectionTitle = styled.h2`
   font-size: 1.8rem;
   color: #1a1a1a;
-  margin-bottom: 20px;
+  margin: 0 0 10px;
 `;
 
 const PackageImage = styled.img`
   width: 100%;
-  max-width: 450px;
+  // max-width: 450px;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 `;
+const Holder = styled.div`
+display:flex;
+gap:5px;
+`
 
 const Label = styled.div`
   font-weight: 600;
   color: #333;
   margin-bottom: 4px;
+  width:fit-content;
 `;
-
 const Value = styled.div`
   color: #666;
   margin-bottom: 16px;
@@ -58,7 +61,7 @@ const Value = styled.div`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 25px;
   margin-top: 20px;
 
@@ -163,6 +166,7 @@ const OrderDetail = () => {
           <TabList>
             <Tab>🏞 Package</Tab>
             <Tab>🏕️ Activities</Tab>
+
             <Tab>💳 Payment</Tab>
             <Tab>👤 User</Tab>
             <Tab>📅 Booking</Tab>
@@ -172,7 +176,6 @@ const OrderDetail = () => {
           {/* Package Details */}
           <TabPanel>
             <Card>
-              <SectionTitle>Package Details</SectionTitle>
               <Grid>
                 <div>
                   <PackageImage
@@ -180,48 +183,64 @@ const OrderDetail = () => {
                     alt={packageData.name}
                   />
                 </div>
+                <SectionTitle>Package Details</SectionTitle>
                 <div>
-                  <Label>Name:</Label>
-                  <Value>{packageData.name}</Value>
+                  <Holder>
+                    <Label>Id:</Label>
+                    <Value>{packageData._id}</Value>
+                  </Holder>
+                  <Holder>
+                    <Label>Name:</Label>
+                    <Value>{packageData.name}</Value>
+                  </Holder>
 
-                  <Label>Description:</Label>
-                  <Value>{packageData.description}</Value>
+                  {/* <Label>Description:</Label>
+                  <Value>{packageData.description}</Value> */}
+                  <Holder>
+                    <Label>City:</Label>
+                    <Value>{packageData?.city?.name || "N/A"}</Value>
+                  </Holder>
+                  <Holder>
 
-                  <Label>City:</Label>
-                  <Value>{packageData?.city?.name || "N/A"}</Value>
+                    <Label>Inclusions:</Label>
+                    <Value>
+                      {packageData.includesFlight && "✈ Flight "}
+                      {packageData.includesHotel && "🏨 Hotel "}
+                      {packageData.includesSightseeing && "🚗 Sightseeing "}
+                      {packageData.includesMeal && "🍽 Meal"}
+                      {packageData.includesTransport && "🚂 Transport"}
+                    </Value>
+                  </Holder>
 
-                  <Label>Inclusions:</Label>
-                  <Value>
-                    {packageData.includesFlight && "✈ Flight "}
-                    {packageData.includesHotel && "🏨 Hotel "}
-                    {packageData.includesSightseeing && "🚗 Sightseeing "}
-                    {packageData.includesMeal && "🍽 Meal"}
-                    {packageData.includesTransport && "🚂 Transport"}
-                  </Value>
 
                   {packageData.includesFlight && packageData?.flightName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Flight Details:</Label>
-                      {packageData?.flightName?.split(',').map((line, index) => (
-                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      <Value>{packageData?.flightName}</Value>
+                      {/* {packageData?.flightName?.split(',').map((line, index) => (
+                          <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
+                        ))} */}
+                    </Holder>
+                  }
 
                   {packageData.includesTransport && packageData?.transportName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Transport Details:</Label>
-                      {packageData?.transportName?.split(',').map((line, index) => (
-                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      <Value>{packageData?.transportName}</Value>
+                      {/* {packageData?.transportName?.split(',').map((line, index) => (
+                          <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
+                        ))} */}
+                    </Holder>
+                  }
 
                   {packageData.includesHotel && packageData?.hotelName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Hotel Details:</Label>
-                      {packageData?.hotelName?.split(',').map((line, index) => (
+                      <Value>{packageData?.hotelName}</Value>
+                      {/* {packageData?.hotelName?.split(',').map((line, index) => (
                         <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      ))} */}
+                    </Holder>}
                 </div>
               </Grid>
             </Card>
@@ -230,28 +249,48 @@ const OrderDetail = () => {
             <Card>
               <SectionTitle>Activities Details</SectionTitle>
               {packageData.travel.activities.slice(0, packageData.duration).map((act, index) => (
-                <>
+                <Holder>
                   <Label>Day {index + 1}:</Label>
                   <Value>{act}</Value>
-                </>
+                </Holder>
               ))}
             </Card>
           </TabPanel>
+
           {/* Payment Details */}
           <TabPanel>
             <Card>
               <SectionTitle>Payment Details</SectionTitle>
-              <Label>Status:</Label>
-              <Value>{packageData.status}</Value>
+              <Holder>
 
-              <Label>Payment ID:</Label>
-              <Value>{packageData.paymentId}</Value>
+                <Label>Status:</Label>
+                <Value>{packageData.status}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>Amount Paid:</Label>
-              <Value>₹{packageData.amount}</Value>
+                <Label>Payment ID:</Label>
+                <Value>{packageData.paymentId}</Value>
+              </Holder>
+              {packageData.roomDetails?.price?
+              <>
+              <Holder>
+                <Label>Package Price:</Label>
+                <Value>₹{packageData.amount-packageData.roomDetails?.price}</Value>
+              </Holder>
+              <Holder>
+                <Label>Room Price:</Label>
+                <Value>₹{packageData.roomDetails?.price}</Value>
+              </Holder>
+              </>:null}
+              <Holder>
+                <Label>Total Price:</Label>
+                <Value>₹{packageData.amount}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>Paid On:</Label>
-              <Value>{new Date(packageData.ownedDate).toLocaleDateString()}</Value>
+                <Label>Paid On:</Label>
+                <Value>{new Date(packageData.ownedDate).toLocaleDateString()}</Value>
+              </Holder>
             </Card>
           </TabPanel>
 
@@ -259,20 +298,26 @@ const OrderDetail = () => {
           <TabPanel>
             <Card>
               <SectionTitle>User Details</SectionTitle>
-              <Label>Username:</Label>
-              <Value>{packageData.ownedBy.username}</Value>
+              <Holder>
 
-              <Label>Email:</Label>
-              <Value>{packageData.ownedBy.email}</Value>
+                <Label>Username:</Label>
+                <Value>{packageData.ownedBy.username}</Value>
+              </Holder>
+              <Holder>
 
+                <Label>Email:</Label>
+                <Value>{packageData.ownedBy.email}</Value>
+              </Holder>
               {packageData.ownedBy.userUniqueIdentifier &&
-                <>
+                <Holder>
                   <Label>Adhar Number:</Label>
                   <Value>{packageData.ownedBy.userUniqueIdentifier}</Value>
-                </>}
-              <Label>Account Created:</Label>
-              <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
+                </Holder>}
+              <Holder>
 
+                <Label>Account Created:</Label>
+                <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
+              </Holder>
             </Card>
           </TabPanel>
 
@@ -280,45 +325,88 @@ const OrderDetail = () => {
           <TabPanel>
             <Card>
               <SectionTitle>Booking Details</SectionTitle>
-              <Label>People:</Label>
-              <Value>{packageData.quantity}</Value>
+              <Holder>
 
-              <Label>Duration:</Label>
-              <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
+                <Label>People:</Label>
+                <Value>{packageData.quantity}</Value>
+              </Holder>
+              <Holder>
 
+                <Label>Duration:</Label>
+                <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
+              </Holder>
+              {packageData.roomDetails?.name?
+              <>
+                <Label>Room Details</Label>
+              <Holder>
+                <Label>Room Name:</Label>
+                <Value>{packageData.roomDetails?.name}</Value>
+              </Holder>
+              <Holder>
+                <Label>Room Description:</Label>
+                <Value>{packageData.roomDetails?.description}</Value>
+              </Holder>
+              <Holder>
+                <Label>No. of Room:</Label>
+                <Value>{packageData.roomDetails?.quantity} {packageData.roomDetails?.includeWithPackage ? `(1 Room with no extra Cost)` : null}</Value>
+              </Holder>
+
+              </>
+              :null}
               {packageData.usersData.length ?
                 <>
                   <Label>User Details</Label>
                   <ol>
                     {
                       packageData.usersData.map((user) => (
-                        <li><Value>{user.name} ({user.contactInfo})</Value></li>
+                        <li>
+                          <Holder>
+
+                            <Label>Id:</Label>
+                            <Value>{user._id}</Value>
+                          </Holder>
+                          <Holder>
+
+                            <Label>Name:</Label>
+                            <Value>{user.name}</Value>
+                          </Holder>
+                          <Holder>
+
+                            <Label>Contact Info:</Label>
+                            <Value>{user.contactInfo}</Value>
+                          </Holder>
+                        </li>
                       ))
                     }
                   </ol>
                 </>
                 : null}
+              <Holder>
 
-              <Label>Booking Status:</Label>
-              <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>
+                <Label>Booking Status:</Label>
+                <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>Start Date:</Label>
-              <Value>{new Date(packageData.bookingStartDate).toLocaleDateString()}</Value>
+                <Label>Start Date:</Label>
+                <Value>{new Date(packageData.bookingStartDate).toLocaleDateString()}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>End Date:</Label>
-              <Value>{new Date(packageData.bookingEndDate).toLocaleDateString()}</Value>
+                <Label>End Date:</Label>
+                <Value>{new Date(packageData.bookingEndDate).toLocaleDateString()}</Value>
+              </Holder>
 
               {packageData.cancelAt && (
-                <>
+                <Holder>
                   <Label>Cancelled On:</Label>
                   <Value>{new Date(packageData.cancelAt).toLocaleDateString()}</Value>
-                </>
+                </Holder>
               )}
             </Card>
           </TabPanel>
           <TabPanel>
             <Card>
-              <SectionTitle>Package Details</SectionTitle>
               <Grid>
                 <div>
                   <PackageImage
@@ -326,132 +414,216 @@ const OrderDetail = () => {
                     alt={packageData.name}
                   />
                 </div>
+                <SectionTitle>Package Details</SectionTitle>
                 <div>
-                  <Label>Name:</Label>
-                  <Value>{packageData.name}</Value>
+                  <Holder>
+                    <Label>Id:</Label>
+                    <Value>{packageData._id}</Value>
+                  </Holder>
+                  <Holder>
+                    <Label>Name:</Label>
+                    <Value>{packageData.name}</Value>
+                  </Holder>
 
-                  <Label>Description:</Label>
-                  <Value>{packageData.description}</Value>
+                  {/* <Label>Description:</Label>
+                  <Value>{packageData.description}</Value> */}
+                  <Holder>
+                    <Label>City:</Label>
+                    <Value>{packageData?.city?.name || "N/A"}</Value>
+                  </Holder>
+                  <Holder>
 
-                  <Label>City:</Label>
-                  <Value>{packageData?.city?.name || "N/A"}</Value>
+                    <Label>Inclusions:</Label>
+                    <Value>
+                      {packageData.includesFlight && "✈ Flight "}
+                      {packageData.includesHotel && "🏨 Hotel "}
+                      {packageData.includesSightseeing && "🚗 Sightseeing "}
+                      {packageData.includesMeal && "🍽 Meal"}
+                      {packageData.includesTransport && "🚂 Transport"}
+                    </Value>
+                  </Holder>
 
-                  <Label>Inclusions:</Label>
-                  <Value>
-                    {packageData.includesFlight && "✈ Flight "}
-                    {packageData.includesHotel && "🏨 Hotel "}
-                    {packageData.includesSightseeing && "🚗 Sightseeing "}
-                    {packageData.includesMeal && "🍽 Meal"}
-                    {packageData.includesTransport && "🚂 Transport"}
-                  </Value>
 
                   {packageData.includesFlight && packageData?.flightName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Flight Details:</Label>
-                      {packageData?.flightName?.split(',').map((line, index) => (
-                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      <Value>{packageData?.flightName}</Value>
+                      {/* {packageData?.flightName?.split(',').map((line, index) => (
+                          <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
+                        ))} */}
+                    </Holder>
+                  }
 
                   {packageData.includesTransport && packageData?.transportName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Transport Details:</Label>
-                      {packageData?.transportName?.split(',').map((line, index) => (
-                        <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      <Value>{packageData?.transportName}</Value>
+                      {/* {packageData?.transportName?.split(',').map((line, index) => (
+                          <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
+                        ))} */}
+                    </Holder>
+                  }
 
                   {packageData.includesHotel && packageData?.hotelName &&
-                    <div style={{ marginBottom: '10px' }}>
+                    <Holder style={{ marginBottom: '10px' }}>
                       <Label>Hotel Details:</Label>
-                      {packageData?.hotelName?.split(',').map((line, index) => (
+                      <Value>{packageData?.hotelName}</Value>
+                      {/* {packageData?.hotelName?.split(',').map((line, index) => (
                         <Value style={{ margin: 0 }} key={index}>{line.trim()}</Value>
-                      ))}
-                    </div>}
+                      ))} */}
+                    </Holder>}
                 </div>
               </Grid>
             </Card>
-            <Card>
-              <SectionTitle>Activities Details</SectionTitle>
-              {packageData.travel.activities.slice(0, packageData.duration).map((act, index) => (
-                <>
-                  <Label>Day {index + 1}:</Label>
-                  <Value>{act}</Value>
-                </>
-              ))}
-            </Card>
-          {/* Payment Details */}
-            <Card>
-              <SectionTitle>Payment Details</SectionTitle>
-              <Label>Status:</Label>
-              <Value>{packageData.status}</Value>
-
-              <Label>Payment ID:</Label>
-              <Value>{packageData.paymentId}</Value>
-
-              <Label>Amount Paid:</Label>
-              <Value>₹{packageData.amount}</Value>
-
-              <Label>Paid On:</Label>
-              <Value>{new Date(packageData.ownedDate).toLocaleDateString()}</Value>
-            </Card>
-
-          {/* User Details */}
-            <Card>
-              <SectionTitle>User Details</SectionTitle>
-              <Label>Username:</Label>
-              <Value>{packageData.ownedBy.username}</Value>
-
-              <Label>Email:</Label>
-              <Value>{packageData.ownedBy.email}</Value>
-
-              {packageData.ownedBy.userUniqueIdentifier &&
-                <>
-                  <Label>Adhar Number:</Label>
-                  <Value>{packageData.ownedBy.userUniqueIdentifier}</Value>
-                </>}
-              <Label>Account Created:</Label>
-              <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
-
-            </Card>
-
-          {/* Booking Details */}
+            {/* Booking Details */}
             <Card>
               <SectionTitle>Booking Details</SectionTitle>
-              <Label>People:</Label>
-              <Value>{packageData.quantity}</Value>
+              <Holder>
+                <Label>Number of Persons:</Label>
+                <Value>{packageData.quantity}</Value>
+              </Holder>
+              <Holder>
+                <Label>Duration:</Label>
+                <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
+              </Holder>
+              {packageData.roomDetails?.name?
+              <>
+                <Label>Room Details</Label>
+              <Holder>
+                <Label>Room Name:</Label>
+                <Value>{packageData.roomDetails?.name}</Value>
+              </Holder>
+              <Holder>
+                <Label>Room Description:</Label>
+                <Value>{packageData.roomDetails?.description}</Value>
+              </Holder>
+              <Holder>
+                <Label>No. of Room:</Label>
+                <Value>{packageData.roomDetails?.quantity} {packageData.roomDetails?.includeWithPackage ? `(1 Room with no extra Cost)` : null}</Value>
+              </Holder>
 
-              <Label>Duration:</Label>
-              <Value>{packageData.duration} Days {packageData.duration > 1 ? ` & ${packageData.duration - 1} Nights` : null}</Value>
-
+              </>
+              :null}
+            </Card>
+            <Card>
+              <SectionTitle>Booking Description</SectionTitle>
               {packageData.usersData.length ?
                 <>
                   <Label>User Details</Label>
                   <ol>
                     {
                       packageData.usersData.map((user) => (
-                        <li><Value>{user.name} ({user.contactInfo})</Value></li>
+                        <li>
+                          <Holder>
+
+                            <Label>Id:</Label>
+                            <Value>{user._id}</Value>
+                          </Holder>
+                          <Holder>
+
+                            <Label>Name:</Label>
+                            <Value>{user.name}</Value>
+                          </Holder>
+                          <Holder>
+
+                            <Label>Contact Info:</Label>
+                            <Value>{user.contactInfo}</Value>
+                          </Holder>
+                        </li>
                       ))
                     }
                   </ol>
                 </>
                 : null}
+              <Holder>
 
-              <Label>Booking Status:</Label>
-              <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>
+                <Label>Booking Status:</Label>
+                <Value>{packageData.status === "paid" ? "✅ Confirmed" : "❌ Cancelled"}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>Start Date:</Label>
-              <Value>{new Date(packageData.bookingStartDate).toLocaleDateString()}</Value>
+                <Label>Start Date:</Label>
+                <Value>{new Date(packageData.bookingStartDate).toLocaleDateString()}</Value>
+              </Holder>
+              <Holder>
 
-              <Label>End Date:</Label>
-              <Value>{new Date(packageData.bookingEndDate).toLocaleDateString()}</Value>
+                <Label>End Date:</Label>
+                <Value>{new Date(packageData.bookingEndDate).toLocaleDateString()}</Value>
+              </Holder>
 
               {packageData.cancelAt && (
-                <>
+                <Holder>
                   <Label>Cancelled On:</Label>
                   <Value>{new Date(packageData.cancelAt).toLocaleDateString()}</Value>
-                </>
+                </Holder>
               )}
+            </Card>
+            {/* Payment Details */}
+            <Card>
+              <SectionTitle>Payment Details</SectionTitle>
+              <Holder>
+
+                <Label>Status:</Label>
+                <Value>{packageData.status}</Value>
+              </Holder>
+              <Holder>
+
+                <Label>Payment ID:</Label>
+                <Value>{packageData.paymentId}</Value>
+              </Holder>
+              {packageData.roomDetails?.price?
+              <>
+              <Holder>
+                <Label>Package Price:</Label>
+                <Value>₹{packageData.amount-packageData.roomDetails?.price}</Value>
+              </Holder>
+              <Holder>
+                <Label>Room Price:</Label>
+                <Value>₹{packageData.roomDetails?.price}</Value>
+              </Holder>
+              </>:null}
+              <Holder>
+
+                <Label>Total Price:</Label>
+                <Value>₹{packageData.amount}</Value>
+              </Holder>
+              <Holder>
+
+                <Label>Paid On:</Label>
+                <Value>{new Date(packageData.ownedDate).toLocaleDateString()}</Value>
+              </Holder>
+            </Card>
+
+            {/* User Details */}
+            <Card>
+              <SectionTitle>User Details</SectionTitle>
+              <Holder>
+
+                <Label>Id:</Label>
+                <Value>{packageData.ownedBy._id}</Value>
+              </Holder>
+              <Holder>
+
+                <Label>Username:</Label>
+                <Value>{packageData.ownedBy.username}</Value>
+              </Holder>
+              <Holder>
+
+                <Label>Email:</Label>
+                <Value>{packageData.ownedBy.email}</Value>
+              </Holder>
+
+              {packageData.ownedBy.userUniqueIdentifier &&
+                <Holder>
+                  <Label>Adhar Number:</Label>
+                  <Value>{packageData.ownedBy.userUniqueIdentifier}</Value>
+                </Holder>}
+              <Holder>
+
+                <Label>Account Created:</Label>
+                <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
+
+              </Holder>
             </Card>
           </TabPanel>
         </Tabs>

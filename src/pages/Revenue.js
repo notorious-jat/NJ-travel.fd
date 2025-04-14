@@ -221,7 +221,9 @@ const Revenue = () => {
           <Table>
             <thead>
               <tr>
+                <TableHeader>Package Id</TableHeader>
                 <TableHeader>Package Name</TableHeader>
+                <TableHeader>Owner Id</TableHeader>
                 <TableHeader>Owner</TableHeader>
                 <TableHeader>Amount (INR)</TableHeader>
                 <TableHeader>Number of Person</TableHeader>
@@ -236,7 +238,9 @@ const Revenue = () => {
             <tbody>
               {filteredRevenue.map((rev) => (
                 <TableRow key={rev._id}>
+                  <TableCell>{rev._id}</TableCell>
                   <TableCell>{rev.travel.name}</TableCell>
+                  <TableCell>{rev.ownedBy._id}</TableCell>
                   <TableCell>{rev.ownedBy.username}</TableCell>
                   <TableCell>₹{rev.amount}</TableCell>
                   <TableCell>{rev.quantity}</TableCell>
