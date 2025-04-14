@@ -32,18 +32,19 @@ const SelectField = styled.select`
   border-radius: 5px;
   border: 1px solid #ccc;
 `;
+
 const Button = styled.button`
-  background-color: #34495e;
-  color:#fff;
-  border: none;
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
 
   &:hover {
-  background-color: #fff;
-  color:#34495e;
+    background: #fff;
+    color: #333;
   }
 `;
 

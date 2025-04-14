@@ -286,6 +286,18 @@ const OrderDetail = () => {
                 <Label>Total Price:</Label>
                 <Value>₹{packageData.amount}</Value>
               </Holder>
+              {packageData.status =="refunded" ? 
+              <>
+              <Holder>
+              <Label>cancellation charges (30%):</Label>
+              <Value>₹{packageData.amount * 0.30}</Value>
+            </Holder>
+            <Holder>
+              <Label>Refund Amount:</Label>
+              <Value>₹{packageData.amount-(packageData.amount * 0.30)}</Value>
+            </Holder>
+              </>
+              :null}
               <Holder>
 
                 <Label>Paid On:</Label>
@@ -308,6 +320,11 @@ const OrderDetail = () => {
                 <Label>Email:</Label>
                 <Value>{packageData.ownedBy.email}</Value>
               </Holder>
+              {packageData.ownedBy.phone &&
+                <Holder>
+                  <Label>Phone Number:</Label>
+                  <Value>{packageData.ownedBy.phone}</Value>
+                </Holder>}
               {packageData.ownedBy.userUniqueIdentifier &&
                 <Holder>
                   <Label>Adhar Number:</Label>
@@ -316,7 +333,7 @@ const OrderDetail = () => {
               <Holder>
 
                 <Label>Account Created:</Label>
-                <Value>{new Date(packageData.ownedBy.createdAt).toLocaleDateString()}</Value>
+                <Value>{new Date(packageData.ownedBy.createdAt).toLocaleString()}</Value>
               </Holder>
             </Card>
           </TabPanel>
@@ -587,6 +604,18 @@ const OrderDetail = () => {
                 <Label>Total Price:</Label>
                 <Value>₹{packageData.amount}</Value>
               </Holder>
+              {packageData.status =="refunded" ? 
+              <>
+              <Holder>
+              <Label>cancellation charges (30%):</Label>
+              <Value>₹{packageData.amount * 0.30}</Value>
+            </Holder>
+            <Holder>
+              <Label>Refund Amount:</Label>
+              <Value>₹{packageData.amount-(packageData.amount * 0.30)}</Value>
+            </Holder>
+              </>
+              :null}
               <Holder>
 
                 <Label>Paid On:</Label>
@@ -612,7 +641,11 @@ const OrderDetail = () => {
                 <Label>Email:</Label>
                 <Value>{packageData.ownedBy.email}</Value>
               </Holder>
-
+              {packageData.ownedBy.phone &&
+                <Holder>
+                  <Label>Phone Number:</Label>
+                  <Value>{packageData.ownedBy.phone}</Value>
+                </Holder>}
               {packageData.ownedBy.userUniqueIdentifier &&
                 <Holder>
                   <Label>Adhar Number:</Label>

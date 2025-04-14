@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import Navbar from '../components/Navbar';
 import ReviewModal from '../components/ReviewModal';
@@ -124,160 +124,220 @@ const Star = styled.span`
   color: ${(props) => (props.filled ? '#FFD700' : '#ccc')};
 `;
 
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  justify-content:center
+`;
+
+const Select = styled.select`
+  padding: 0.5rem;
+  border-radius: 4px;
+  width:250px;
+`;
+
+const Input = styled.input`
+  padding: 0.5rem;
+  flex: 1;
+  border-radius: 4px;
+  max-width:250px;
+`;
+
 const OrderList = () => {
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedPackageId, setSelectedPackageId] = useState(null);
-    const [toastMessage, setToastMessage] = useState('');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-    // Fetch orders when the component mounts
-    useEffect(() => {
-        const fetchOrders = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('You need to log in first');
-                localStorage.removeItem('token')
-                localStorage.removeItem('role')
-                window.location.href = '/login'; // Redirect if no token
-                return;
-            }
+  // Month options
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  // Fetch orders when the component mounts
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You need to log in first');
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        window.location.href = '/login'; // Redirect if no token
+        return;
+      }
 
-            try {
-                const response = await fetch('http://localhost:5001/api/travel/user/packages', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+      try {
+        const response = await fetch('http://localhost:5001/api/travel/user/packages', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
-                if (!response.ok) {
-                    alert('You need to log in first');
-                    localStorage.removeItem('token')
-                    localStorage.removeItem('role')
-                    window.location.href = '/login'; // Redirect if no token
-                    return;
-                    throw new Error('Failed to fetch orders');
-                }
+        if (!response.ok) {
+          alert('You need to log in first');
+          localStorage.removeItem('token')
+          localStorage.removeItem('role')
+          window.location.href = '/login'; // Redirect if no token
+          return;
+          throw new Error('Failed to fetch orders');
+        }
 
-                const data = await response.json();
-                console.log({ data });
+        const data = await response.json();
+        console.log({ data });
 
-                setOrders(data.packages || []);
-            } catch (error) {
-                setError('Error fetching orders');
-                localStorage.removeItem('token')
-                localStorage.removeItem('role')
-                console.error('Error:', error);
-                alert('You need to log in first');
-                window.location.href = '/login'; // Redirect if no token
-                return;
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchOrders();
-    }, []); // Empty dependency array makes it run once after initial render
-
-    const handleReviewSubmit = (message) => {
-        toast(message)
-        window.location.reload();
-        // Show toast here
+        setOrders(data.packages || []);
+      } catch (error) {
+        setError('Error fetching orders');
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        console.error('Error:', error);
+        alert('You need to log in first');
+        window.location.href = '/login'; // Redirect if no token
+        return;
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const openReviewModal = (packageId) => {
-        setSelectedPackageId(packageId);
-        setShowModal(true);
-    };
+    fetchOrders();
+  }, []); // Empty dependency array makes it run once after initial render
 
-    const navigationHandler = (id) => {
-        window.location.href = '/myorders/' + id
-    }
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const startMonth = new Date(order.bookingStartDate).getMonth();
+      const endMonth = new Date(order.bookingEndDate).getMonth();
 
-    return (
-        <Template>
-            {loading ? <Loader/> :
-                <OrderListWrapper>
-                    <Title>Your Orders</Title>
-                    {orders.length === 0 ? (
-                        <p>No orders found.</p>
-                    ) : (
-                        <OrderContainer>
-                            {orders.map((order, index) => (
-                                <OrderCard key={index} >
-                                    <Image onClick={() => navigationHandler(order._id)} title='click to see detttails' src={`http://localhost:5001/${order.images?.[0]}`} />
-                                    <OrderCardHeader>
-                                        <OrderID><strong>Order #{order._id.slice(0, 5)}</strong></OrderID>
-                                        <OrderInfo><strong>City:</strong> {order?.city?.name||'NA'}</OrderInfo>
-                                        <OrderInfo><strong>Date:</strong> {new Date(order.ownedDate).toLocaleDateString()}</OrderInfo>
-                                    </OrderCardHeader>
+      // Filter by month
+      const matchesMonth = selectedMonth === '' ||
+        parseInt(selectedMonth) === startMonth ||
+        parseInt(selectedMonth) === endMonth;
 
-                                    {/* Show Travel Package Information */}
-                                    <TravelInfo>
-                                        <TravelName onClick={() => navigationHandler(order.travel._id)} title='click to see detttails'>{order.travel.name}</TravelName>
-                                        <div style={{display:'flex',justifyContent:'space-between'}}>
-                                          <div style={{width:'50%'}}>
-                                        <OrderInfo><strong>Number of Person:</strong>&nbsp;{order.quantity}</OrderInfo>
-                                        <OrderInfo><strong>Status:</strong>&nbsp;{order.status=="paid"?order.status:'Cancelled'}</OrderInfo>
-                                        <OrderInfo><strong>Total:</strong> ₹{order.amount}</OrderInfo>
-                                          </div>
-                                          <div style={{width:'50%',textAlign:'end'}}>
-                                        <OrderInfo><strong>Duration:</strong> {order.duration} Day {order.duration>1 ? `& ${order.duration-1} Night`:null}</OrderInfo>
-                                        <OrderInfo><strong>Start Date:</strong> {new Date(order.bookingStartDate).toLocaleDateString()}</OrderInfo>
-                                        <OrderInfo><strong>End Date:</strong> {new Date(order.bookingEndDate).toLocaleDateString()}</OrderInfo>
-                                          </div>
-                                        </div>
-                                    </TravelInfo>
+      // Filter by search query
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = order.travel?.name?.toLowerCase().includes(query) ||
+        String(order.amount).includes(query) ||
+        String(order.quantity).includes(query);
 
-                                    {/* Check if User has Reviewed the Travel Package */}
-                                    {order.travel.hasReviewed ? (
-                                        <ReviewSection>
-                                            {order.travel.reviews.map((review, idx) => (
-                                                review.user === order.ownedBy && (
-                                                    <ReviewCard key={idx}>
-                                                        <StarContainer>
+      return matchesMonth && matchesSearch;
+    });
+  }, [orders, selectedMonth, searchQuery]);
 
-                                                            <StarContainer>
-                                                                {[1, 2, 3, 4, 5].map((starIndex) => (
-                                                                    <Star
-                                                                        key={starIndex}
-                                                                        filled={starIndex <= review.rating}
-                                                                    >
-                                                                        ★
-                                                                    </Star>
-                                                                ))}
-                                                            </StarContainer>
-                                                            <ReviewDate>Reviewed on: {new Date(review.date).toLocaleDateString()}</ReviewDate>
-                                                        </StarContainer>
-                                                        <ReviewText>{review.description}</ReviewText>
-                                                    </ReviewCard>
-                                                )
-                                            ))}
-                                        </ReviewSection>
-                                    ) : (
-                                        <ReviewText style={{zIndex:'111'}} onClick={() => openReviewModal(order.travel._id)}>add review for this package.</ReviewText>
-                                    )}
-                                </OrderCard>
-                            ))}
-                        </OrderContainer>
-                    )}
-                    {selectedPackageId && (
-                        <ReviewModal
-                            showModal={showModal}
-                            setShowModal={setShowModal}
-                            packageId={selectedPackageId}
-                            onReviewSubmit={handleReviewSubmit}
-                        />
-                    )}
 
-                    {/* Toast Message */}
-                    {toastMessage && <div>{toastMessage}</div>}
-                </OrderListWrapper>}
-        </Template>
-    );
+  const handleReviewSubmit = (message) => {
+    toast(message)
+    window.location.reload();
+    // Show toast here
+  };
+
+  const openReviewModal = (packageId) => {
+    setSelectedPackageId(packageId);
+    setShowModal(true);
+  };
+
+  const navigationHandler = (id) => {
+    window.location.href = '/myorders/' + id
+  }
+
+  return (
+    <Template>
+      {loading ? <Loader /> :
+        <OrderListWrapper>
+          <Title>Your Orders</Title>
+          <FilterContainer>
+            <Select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
+              <option value="">All Months</option>
+              {months.map((month, index) => (
+                <option key={index} value={index}>{month}</option>
+              ))}
+            </Select>
+
+            <Input
+              type="text"
+              placeholder="Search orders..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </FilterContainer>
+
+          {filteredOrders.length === 0 ? (
+            <p>No orders found.</p>
+          ) : (
+            <OrderContainer>
+              {filteredOrders.map((order, index) => (
+                <OrderCard key={index} >
+                  <Image onClick={() => navigationHandler(order._id)} title='click to see detttails' src={`http://localhost:5001/${order.images?.[0]}`} />
+                  <OrderCardHeader>
+                    <OrderID><strong>Order #{order._id.slice(0, 5)}</strong></OrderID>
+                    <OrderInfo><strong>City:</strong> {order?.city?.name || 'NA'}</OrderInfo>
+                    <OrderInfo><strong>Date:</strong> {new Date(order.ownedDate).toLocaleDateString()}</OrderInfo>
+                  </OrderCardHeader>
+
+                  {/* Show Travel Package Information */}
+                  <TravelInfo>
+                    <TravelName onClick={() => navigationHandler(order.travel._id)} title='click to see detttails'>{order.travel.name}</TravelName>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div style={{ width: '50%' }}>
+                        <OrderInfo><strong>Number of Person:</strong>&nbsp;{order.quantity}</OrderInfo>
+                        <OrderInfo><strong>Status:</strong>&nbsp;{order.status == "paid" ? order.status : 'Cancelled'}</OrderInfo>
+                        <OrderInfo><strong>Total:</strong> ₹{order.amount}</OrderInfo>
+                      </div>
+                      <div style={{ width: '50%', textAlign: 'end' }}>
+                        <OrderInfo><strong>Duration:</strong> {order.duration} Day {order.duration > 1 ? `& ${order.duration - 1} Night` : null}</OrderInfo>
+                        <OrderInfo><strong>Start Date:</strong> {new Date(order.bookingStartDate).toLocaleDateString()}</OrderInfo>
+                        <OrderInfo><strong>End Date:</strong> {new Date(order.bookingEndDate).toLocaleDateString()}</OrderInfo>
+                      </div>
+                    </div>
+                  </TravelInfo>
+
+                  {/* Check if User has Reviewed the Travel Package */}
+                  {order.travel.hasReviewed ? (
+                    <ReviewSection>
+                      {order.travel.reviews.map((review, idx) => (
+                        review.user === order.ownedBy && (
+                          <ReviewCard key={idx}>
+                            <StarContainer>
+
+                              <StarContainer>
+                                {[1, 2, 3, 4, 5].map((starIndex) => (
+                                  <Star
+                                    key={starIndex}
+                                    filled={starIndex <= review.rating}
+                                  >
+                                    ★
+                                  </Star>
+                                ))}
+                              </StarContainer>
+                              <ReviewDate>Reviewed on: {new Date(review.date).toLocaleDateString()}</ReviewDate>
+                            </StarContainer>
+                            <ReviewText>{review.description}</ReviewText>
+                          </ReviewCard>
+                        )
+                      ))}
+                    </ReviewSection>
+                  ) : (
+                    <ReviewText style={{ zIndex: '111' }} onClick={() => openReviewModal(order.travel._id)}>add review for this package.</ReviewText>
+                  )}
+                </OrderCard>
+              ))}
+            </OrderContainer>
+          )}
+          {selectedPackageId && (
+            <ReviewModal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              packageId={selectedPackageId}
+              onReviewSubmit={handleReviewSubmit}
+            />
+          )}
+        </OrderListWrapper>}
+    </Template>
+  );
 };
 
 export default OrderList;

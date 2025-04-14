@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import LeftMenu from "../components/LeftMenu";
+import { FaPrint } from "react-icons/fa";
 
 const Container = styled.div`
   padding: 2rem;
@@ -58,6 +59,21 @@ const Table = styled.table`
   }
 `;
 
+const Button = styled.button`
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background: #fff;
+    color: #333;
+  }
+`;
+
 
 const VendorReportDetails = () => {
   const { id } = useParams(); // travel package ID from route
@@ -92,6 +108,10 @@ const VendorReportDetails = () => {
     fetchReportDetails();
   }, [id, navigate]);
 
+  const printScreen = () => {
+    window.print()
+  }
+
   return (
     <LeftMenu>
     <Container>
@@ -105,6 +125,7 @@ const VendorReportDetails = () => {
           <h2>{travelPackage.username}</h2>
             <p><strong>Id:</strong> {travelPackage._id}</p>
             <p><strong>Email:</strong> {travelPackage.email}</p>
+            <p><strong>Phone:</strong> {travelPackage.phone||'NA'}</p>
             <p><strong>No. of Sale:</strong> {travelPackage.totalSales}</p>
             <p><strong>Revenue:</strong> {travelPackage.totalRevenue}</p>
             <p><strong>Created At:</strong> {new Date(travelPackage.createdAt).toLocaleDateString()}</p>
@@ -151,6 +172,9 @@ const VendorReportDetails = () => {
               </tbody>
             </Table>
           )}
+                   <Button type="print" onClick={printScreen}>
+                      <FaPrint /> Print Invoice
+                    </Button>
         </>
       )}
     </Container>

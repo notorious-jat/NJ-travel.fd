@@ -19,7 +19,7 @@ const DashboardBox = styled.div`
 `;
 
 const ReportBlock = styled.div`
-  background: #2c3e50;
+  background: #333;
   color: #fff;
   width: 23%;
   margin-bottom: 20px;

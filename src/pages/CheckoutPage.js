@@ -219,7 +219,7 @@ const CheckoutPage = () => {
   const [startDate, setStartDate] = useState(null); // New state for start date
   const [numOfDays, setNumOfDays] = useState(1); // New state for number of days
   const [isAvailable, setIsAvailable] = useState(false); // State for availability check result
-  const [roomBill,setRoomBill] = useState({name:null,description:null,price:0,includeWithPackage:null,quantity:null})
+  const [roomBill,setRoomBill] = useState({name:'',description:'',price:0,includeWithPackage:false,quantity:''})
 
   const navigate = useNavigate();
   let id = null;
@@ -284,6 +284,7 @@ const CheckoutPage = () => {
           setShowPayment(response.data.data.rooms.length == 0 ? true : false)
 
           setSelectRoom(selectedRoom ? selectedRoom._id : null);
+
           // Get the client secret for the payment
           const paymentResponse = await axios.post("http://localhost:5001/checkout", {
             package_id: id,

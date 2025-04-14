@@ -8,13 +8,16 @@ const DashboardWrapper = styled.div`
 `;
 const Sidebar = styled.div`
   width: 250px;
-  background-color: #2c3e50;
+  background-color: #333;
   color: #fff;
   padding: 20px;
   display: flex;
   flex-direction: column;
   position: fixed;
   height: 100vh;
+      @media print {
+      display: none !important;
+  }
 `;
 
 const SidebarItem = styled.button`
@@ -30,20 +33,22 @@ const SidebarItem = styled.button`
   border-radius: 5px;
 
   &:hover {
-    background-color: #34495e;
+    background-color: #555;
   }
 `;
 const LogoutButton = styled.button`
   background-color: #fff;
-  color:#34495e;
-  border: none;
+  color:#333;
+  border: 1px solid #fff;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
-
+  
   &:hover {
-    color: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    background:#333;
   }
 `;
 const ContentWrapper = styled.div`

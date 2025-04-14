@@ -60,6 +60,7 @@ const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone,setPhone] = useState("")
   const [userUniqueIdentifier, setUserUniqueIdentifier] = useState("")
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -80,6 +81,7 @@ const RegisterPage = () => {
         username,
         email,
         password,
+        phone,
         userUniqueIdentifier,
         role: 'user',
       });
@@ -122,12 +124,27 @@ const RegisterPage = () => {
               required
             />
             <Input
-              type="email"
+              type="phone"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+     <Input
+  type="number"
+  placeholder="Enter your phone"
+  value={phone}
+  onChange={(e) => {
+    const value = e.target.value;
+    // Optional: Allow only digits, no symbols like "e", ".", "+"
+    if (/^\d*$/.test(value)) {
+      setPhone(value);
+    }
+  }}
+  inputMode="numeric"      // Better mobile keyboard UX
+  pattern="\d*"            // Hint to browsers for digits only
+  required
+/>
             <Input
               type="password"
               placeholder="Enter your password"

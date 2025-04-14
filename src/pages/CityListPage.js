@@ -11,22 +11,22 @@ const CityListWrapper = styled.div`
 
 const Title = styled.h2`
   font-size: 24px;
-  color: #2c3e50;
+  color: #333;
   margin-bottom: 20px;
 `;
 
 const Button = styled.button`
-  background-color: #34495e;
+  background-color: #333;
   color: #fff;
-  border: none;
+  border: 0.5px solid #333;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
 
   &:hover {
-    background-color: #fff;
-    color: #34495e;
+    background: #fff;
+    color: #333;
   }
 `;
 
@@ -41,7 +41,7 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  background-color: #34495e;
+  background-color: #333;
   color: white;
   padding: 10px;
   text-align: left;
@@ -138,7 +138,7 @@ const CityListPage = () => {
         <CityListWrapper>
           <Title>Cities</Title>
           <Button onClick={() => navigate("/cities/create")}>Add New City</Button>
-
+&nbsp;
           {/* Filter Input */}
           <FilterInput
             type="text"

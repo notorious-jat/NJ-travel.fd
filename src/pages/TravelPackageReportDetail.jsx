@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import LeftMenu from "../components/LeftMenu";
+import { FaPrint } from "react-icons/fa";
 
 const Container = styled.div`
   padding: 2rem;
@@ -58,6 +59,21 @@ const Table = styled.table`
   }
 `;
 
+const Button = styled.button`
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background: #fff;
+    color: #333;
+  }
+`;
+
 
 const ReportDetailPage = () => {
   const { id } = useParams(); // travel package ID from route
@@ -92,61 +108,66 @@ const ReportDetailPage = () => {
 
     fetchReportDetails();
   }, [id, navigate]);
-
+  const printScreen = () => {
+    window.print()
+  }
   return (
     <LeftMenu>
-    <Container>
-      <Title>Package Report</Title>
+      <Container>
+        <Title>Package Report</Title>
 
-      {!travelPackage ? (
-        <Loader/>
-      ) : (
-        <>
-          <PackageInfo>
-            <h2>{travelPackage.name}</h2>
-            <p><strong>City:</strong> {travelPackage.city?.name}</p>
-            <p><strong>Created By:</strong> {travelPackage.createdBy?.username} ({travelPackage.createdBy?.email})</p>
-            <p><strong>Price:</strong> ₹{travelPackage.price}</p>
-            <p><strong>Status:</strong> {travelPackage.status}</p>
-            <p><strong>Description:</strong> {travelPackage.description}</p>
-          </PackageInfo>
+        {!travelPackage ? (
+          <Loader />
+        ) : (
+          <>
+            <PackageInfo>
+              <h2>{travelPackage.name}</h2>
+              <p><strong>City:</strong> {travelPackage.city?.name}</p>
+              <p><strong>Created By:</strong> {travelPackage.createdBy?.username} ({travelPackage.createdBy?.email})</p>
+              <p><strong>Price:</strong> ₹{travelPackage.price}</p>
+              <p><strong>Status:</strong> {travelPackage.status}</p>
+              <p><strong>Description:</strong> {travelPackage.description}</p>
+            </PackageInfo>
 
-          <SectionTitle>Purchase Records</SectionTitle>
-          {purchases.length === 0 ? (
-            <p>No purchases yet.</p>
-          ) : (
-            <Table>
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Amount</th>
-                  <th>Quantity</th>
-                  <th>Payment ID</th>
-                  <th>Status</th>
-                  <th>Booking Start</th>
-                  <th>Booking End</th>
-                </tr>
-              </thead>
-              <tbody>
-                {purchases.map((p) => (
-                  <tr key={p._id}>
-                    <td>{p.ownedBy?.username}</td>
-                    <td>{p.ownedBy?.email}</td>
-                    <td>₹{p.amount}</td>
-                    <td>{p.quantity}</td>
-                    <td>{p.paymentId}</td>
-                    <td>{p.status}</td>
-                    <td>{new Date(p.bookingStartDate).toLocaleDateString()}</td>
-                    <td>{new Date(p.bookingEndDate).toLocaleDateString()}</td>
+            <SectionTitle>Purchase Records</SectionTitle>
+            {purchases.length === 0 ? (
+              <p>No purchases yet.</p>
+            ) : (
+              <Table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Amount</th>
+                    <th>Quantity</th>
+                    <th>Payment ID</th>
+                    <th>Status</th>
+                    <th>Booking Start</th>
+                    <th>Booking End</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </>
-      )}
-    </Container>
+                </thead>
+                <tbody>
+                  {purchases.map((p) => (
+                    <tr key={p._id}>
+                      <td>{p.ownedBy?.username}</td>
+                      <td>{p.ownedBy?.email}</td>
+                      <td>₹{p.status=="refunded"?p.amount*0.30:p.amount}</td>
+                      <td>{p.quantity}</td>
+                      <td>{p.paymentId}</td>
+                      <td>{p.status}</td>
+                      <td>{new Date(p.bookingStartDate).toLocaleDateString()}</td>
+                      <td>{new Date(p.bookingEndDate).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+            <Button type="print" onClick={printScreen}>
+              <FaPrint /> Print Invoice
+            </Button>
+          </>
+        )}
+      </Container>
     </LeftMenu>
   );
 };

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import LeftMenu from "../components/LeftMenu";
+import { FaPrint } from "react-icons/fa";
 
 const Container = styled.div`
   padding: 2rem;
@@ -58,6 +59,20 @@ const Table = styled.table`
   }
 `;
 
+const Button = styled.button`
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background: #fff;
+    color: #333;
+  }
+`;
 
 const UserReportDetails = () => {
   const { id } = useParams(); // travel package ID from route
@@ -92,6 +107,10 @@ const UserReportDetails = () => {
     fetchReportDetails();
   }, [id, navigate]);
 
+  const printScreen = () => {
+    window.print()
+  }
+
   return (
     <LeftMenu>
     <Container>
@@ -105,6 +124,7 @@ const UserReportDetails = () => {
             <h2>{travelPackage.username}</h2>
             <p><strong>Id:</strong> {travelPackage._id}</p>
             <p><strong>Email:</strong> {travelPackage.email}</p>
+            <p><strong>Phone:</strong> {travelPackage.phone||'NA'}</p>
             <p><strong>Created At:</strong> {new Date(travelPackage.createdAt).toLocaleDateString()}</p>
           </PackageInfo>
 
@@ -130,7 +150,7 @@ const UserReportDetails = () => {
                   <tr key={p._id}>
                     <td>{p.travelPackage}</td>
                     <td>{p.city}</td>
-                    <td>₹{p.amount}</td>
+                    <td>₹{p.status=="refunded"?p.amount*0.30:p.amount}</td>
                     <td>{p.quantity}</td>
                     <td>{p.paymentId}</td>
                     <td>{p.status}</td>
@@ -141,6 +161,9 @@ const UserReportDetails = () => {
               </tbody>
             </Table>
           )}
+                   <Button type="print" onClick={printScreen}>
+                      <FaPrint /> Print Invoice
+                    </Button>
         </>
       )}
     </Container>

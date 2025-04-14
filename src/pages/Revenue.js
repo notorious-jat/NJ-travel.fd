@@ -13,7 +13,7 @@ const CityListWrapper = styled.div`
 
 const Title = styled.h2`
   font-size: 24px;
-  color: #2c3e50;
+  color: #333;
   margin-bottom: 20px;
 `;
 
@@ -24,7 +24,7 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  background-color: #34495e;
+  background-color: #333;
   color: white;
   padding: 10px;
   text-align: left;
@@ -42,17 +42,17 @@ const TableRow = styled.tr`
 `;
 
 const Button = styled.button`
-  background-color: #34495e;
-  color: white;
-  border: none;
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
 
   &:hover {
-    background-color: #fff;
-    color: #34495e;
+    background: #fff;
+    color: #333;
   }
 `;
 
@@ -242,7 +242,7 @@ const Revenue = () => {
                   <TableCell>{rev.travel.name}</TableCell>
                   <TableCell>{rev.ownedBy._id}</TableCell>
                   <TableCell>{rev.ownedBy.username}</TableCell>
-                  <TableCell>₹{rev.amount}</TableCell>
+                  <TableCell>₹{rev.status=="refunded"?rev.amount*0.30:rev.amount}</TableCell>
                   <TableCell>{rev.quantity}</TableCell>
                   <TableCell>{new Date(rev.ownedDate).toLocaleDateString()}</TableCell>
                   <TableCell>{rev.status}

@@ -36,13 +36,13 @@ const TabWrapper = styled.div`
 
 const TabButton = styled.button`
   padding: 10px 20px;
-  background-color: ${(props) => (props.active ? "#34495e" : "#ecf0f1")};
-  color: ${(props) => (props.active ? "white" : "#34495e")};
+  background-color: ${(props) => (props.active ? "#333" : "#ecf0f1")};
+  color: ${(props) => (props.active ? "white" : "#333")};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background-color: #34495e;
+    background-color: #333;
     color: white;
   }
 `;
@@ -54,7 +54,7 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-  background-color: #34495e;
+  background-color: #333;
   color: white;
   padding: 10px;
   text-align: left;
@@ -72,20 +72,19 @@ const TableRow = styled.tr`
 `;
 
 const Button = styled.button`
-  background-color: #34495e;
-  color: white;
-  border: none;
+  background-color: #333;
+  color: #fff;
+  border: 0.5px solid #333;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
 
   &:hover {
-    background-color: #fff;
-    color: #34495e;
+    background: #fff;
+    color: #333;
   }
 `;
-
 const UserListPage = () => {
   const [users, setUsers] = useState([]);
   const [searchName, setSearchName] = useState(""); // Filter for username
@@ -174,6 +173,7 @@ const UserListPage = () => {
                 <TableHeader>Id</TableHeader>
                 <TableHeader>Username</TableHeader>
                 <TableHeader>Email</TableHeader>
+                <TableHeader>Phone</TableHeader>
                 <TableHeader>Adhar Number</TableHeader>
                 <TableHeader>Created At</TableHeader>
               </tr>
@@ -184,8 +184,9 @@ const UserListPage = () => {
                   <TableCell>{user._id}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone||'NA'}</TableCell>
                   <TableCell>{user.userUniqueIdentifier??'NA'}</TableCell>
-                  <TableCell>{user.createdAt}</TableCell>
+                  <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
                   {/* <TableCell>
                     <Button onClick={() => navigate(`/users/edit/${user._id}`)}>Edit</Button>
                     <Button
